@@ -3,6 +3,7 @@ package uppu.view;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -15,12 +16,14 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import uppu.model.ActionSequence;
 import uppu.model.HomePoints;
 
+import java.net.URL;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -30,20 +33,24 @@ public class PermutationView {
 
     private static final int WIDTH_CANVAS = (int) (280 * HomePoints.SCALE);
     private static final int HEIGHT = (int) (300 * HomePoints.SCALE);
-    public static final int WIDTH_PANEL = 500;
-    public static final int HEIGHT_SLIDER = 12;
-    public static final int INITIAL_SPEED = 16;
-    public static final int HEIGHT_BUTTON_PANE = 20;
-    public static final Color GRAY = Color.rgb(64, 64, 64);
+    private static final int WIDTH_PANEL = 500;
+    private static final int HEIGHT_SLIDER = 12;
+    private static final int INITIAL_SPEED = 16;
+    private static final int HEIGHT_BUTTON_PANE = 20;
+    
+    private static final Color GRAY = Color.rgb(64, 64, 64);
 
     private final Canvas canvas = new Canvas(WIDTH_CANVAS, HEIGHT);
 
     private final ListView<ActionSequence> actions = new ListView<>();
     private final Stage stage;
     private final SplitPane splitPane = new SplitPane();
+    private final GridPane buttonPanel = new GridPane();
     private final BorderPane borderPane = new BorderPane();
     private final Slider slider = new Slider(0, 32, INITIAL_SPEED);
-
+    private final BorderPane sidePanel = new BorderPane();
+    private final Button pauseButton = new Button("Pause");
+    private final Button editButton = new Button("Edit");
 
     private PermutationView(Stage stage) {
         this.stage = stage;
@@ -63,20 +70,25 @@ public class PermutationView {
                 stage.close();
             }
         });
+        URL style = getClass().getResource("/uppu/css/style.css");
+        scene.getStylesheets().add(style.toExternalForm());
         stage.setScene(scene);
     }
 
     private void createElements() {
-        StackPane sp1 = new StackPane();
-        sp1.setMaxWidth(WIDTH_CANVAS);
-        sp1.setMinWidth(WIDTH_CANVAS);
-        sp1.getChildren().add(canvas);
-        sp1.setBackground(new Background(new BackgroundFill(GRAY, null, null)));
-        StackPane sp2 = new StackPane();
-        sp2.setMinWidth(WIDTH_PANEL);
-        sp2.setBackground(new Background(new BackgroundFill(GRAY, null, null)));
-        sp2.getChildren().add(new Button("OK"));
-        splitPane.getItems().addAll(sp1, sp2);
+        StackPane canvasPane = new StackPane();
+        canvasPane.setMaxWidth(WIDTH_CANVAS);
+        canvasPane.setMinWidth(WIDTH_CANVAS);
+        canvasPane.getChildren().add(canvas);
+        canvasPane.setBackground(new Background(new BackgroundFill(GRAY, null, null)));
+        sidePanel.setMinWidth(WIDTH_PANEL);
+        sidePanel.setBackground(new Background(new BackgroundFill(GRAY, null, null)));
+        sidePanel.setCenter(actions);
+        sidePanel.setBottom(buttonPanel);
+        buttonPanel.setAlignment(Pos.BASELINE_CENTER);
+        buttonPanel.add(pauseButton, 0, 0);
+        buttonPanel.add(editButton, 1, 0);
+        splitPane.getItems().addAll(canvasPane, sidePanel);
         splitPane.setDividerPositions(0.5f, 0.5f);
     }
 
