@@ -6,7 +6,7 @@ import uppu.model.Quadruple;
 
 public class Mover {
 
-    public static final int STEPS = 66;
+    public static final int STEPS = 132;
 
     private final Color color;
     private final Quadruple quadruple;
