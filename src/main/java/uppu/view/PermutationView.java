@@ -1,8 +1,13 @@
 package uppu.view;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.KeyCode;
@@ -13,7 +18,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import uppu.model.ActionSequence;
 import uppu.model.HomePoints;
+
+import java.util.List;
+import java.util.function.Consumer;
+
+import static javafx.collections.FXCollections.observableArrayList;
 
 public class PermutationView {
 
@@ -27,6 +38,7 @@ public class PermutationView {
 
     private final Canvas canvas = new Canvas(WIDTH_CANVAS, HEIGHT);
 
+    private final ListView<ActionSequence> actions = new ListView<>();
     private final Stage stage;
     private final SplitPane splitPane = new SplitPane();
     private final BorderPane borderPane = new BorderPane();
@@ -66,5 +78,35 @@ public class PermutationView {
         sp2.getChildren().add(new Button("OK"));
         splitPane.getItems().addAll(sp1, sp2);
         splitPane.setDividerPositions(0.5f, 0.5f);
+    }
+
+    public GraphicsContext getGraphicsContext() {
+        return canvas.getGraphicsContext2D();
+    }
+
+    public void setTitle(String title) {
+        stage.setTitle(title);
+    }
+
+    public void setOnActionSelected(Consumer<ActionSequence> consumer) {
+        actions.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ActionSequence>() {
+            @Override
+            public void changed(
+                    ObservableValue<? extends ActionSequence> observable,
+                    ActionSequence oldValue, 
+                    ActionSequence newValue) {
+                consumer.accept(newValue);
+            }
+        });
+    }
+
+    public void setSelectedAction(ActionSequence action) {
+        actions.getSelectionModel().select(action);
+    }
+
+    public void setActions(List<ActionSequence> actions) {
+        ObservableList<ActionSequence> data = observableArrayList();
+        data.addAll(actions);
+        this.actions.setItems(data);
     }
 }

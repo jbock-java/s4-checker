@@ -1,9 +1,6 @@
 package uppu.model;
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.shape.Ellipse;
-
-import java.util.Objects;
 
 public final class Point {
 
@@ -18,16 +15,19 @@ public final class Point {
         this.y = y;
         this.z = z;
         this.homeRadius = HOME_RADIUS_100 / z;
-        this.home = new Ellipse(0, 0, homeRadius, homeRadius);
     }
-
-    private final Ellipse home;
 
     Point scale(float scale) {
         return new Point(x * scale, y * scale, z);
     }
 
-    public void paintHome(GraphicsContext g) {
+    public void paintHome(GraphicsContext g, Quadruple quadruple) {
+        float centerX = x() + quadruple.getOffsetX() + ((Action.BALL_SIZE - homeRadius) / 2f);
+        float centerY = y() + quadruple.getOffsetY() + ((Action.BALL_SIZE - homeRadius) / 2f);
+        g.fillOval(centerX - homeRadius, centerY - homeRadius, homeRadius, homeRadius);
+        g.fillOval(centerX - homeRadius, centerY + homeRadius, homeRadius, homeRadius);
+        g.fillOval(centerX + homeRadius, centerY - homeRadius, homeRadius, homeRadius);
+        g.fillOval(centerX + homeRadius, centerY + homeRadius, homeRadius, homeRadius);
     }
 
     public float x() {
@@ -40,28 +40,5 @@ public final class Point {
 
     public float z() {
         return z;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null || obj.getClass() != this.getClass()) return false;
-        var that = (Point) obj;
-        return Float.floatToIntBits(this.x) == Float.floatToIntBits(that.x) &&
-                Float.floatToIntBits(this.y) == Float.floatToIntBits(that.y) &&
-                Float.floatToIntBits(this.z) == Float.floatToIntBits(that.z);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(x, y, z);
-    }
-
-    @Override
-    public String toString() {
-        return "Point[" +
-                "x=" + x + ", " +
-                "y=" + y + ", " +
-                "z=" + z + ']';
     }
 }
