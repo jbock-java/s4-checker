@@ -16,9 +16,6 @@ public final class ActionSequence {
 
     public void init() {
         current = 0;
-        for (Action a : actions) {
-            a.init();
-        }
     }
 
     public Action peekFirst() {

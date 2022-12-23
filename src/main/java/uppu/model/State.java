@@ -48,7 +48,7 @@ public final class State {
             return getMoveAction(((MoveCommand) command).permutation(), state);
         }
         if (command instanceof WaitCommand) {
-            return new ActionWithState(WaitAction.create(((WaitCommand) command).cycles()), state);
+            return new ActionWithState(new WaitAction(((WaitCommand) command).cycles()), state);
         }
         throw new IllegalArgumentException();
     }
@@ -66,6 +66,6 @@ public final class State {
             movers.add(new Mover(color, sourceSlot, targetSlot));
             newColors[j] = color;
         }
-        return new ActionWithState(MoveAction.create(this, movers), List.of(newColors));
+        return new ActionWithState(new MoveAction(movers), List.of(newColors));
     }
 }

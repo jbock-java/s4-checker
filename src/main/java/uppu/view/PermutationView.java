@@ -1,8 +1,8 @@
 package uppu.view;
 
+import javafx.animation.PauseTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
-import javafx.geometry.Point3D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
@@ -23,16 +23,21 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+import uppu.engine.Mover;
 import uppu.model.Action;
 import uppu.model.ActionSequence;
 import uppu.model.HomePoints;
-import uppu.model.HomePoints3D;
 import uppu.model.MoveAction;
 import uppu.model.Spheres;
+import uppu.model.WaitAction;
 
 import java.net.URL;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import static javafx.collections.FXCollections.observableArrayList;
@@ -61,6 +66,9 @@ public class PermutationView {
     Consumer<ActionSequence> onSelected = action -> {
     };
     private final ChangeListener<ActionSequence> changeListener = (observable, oldValue, newValue) -> onSelected.accept(newValue);
+    private Runnable onFinished = () -> {
+    };
+
     private PermutationView(Stage stage) {
         this.stage = stage;
     }
@@ -95,13 +103,6 @@ public class PermutationView {
         splitPane.getItems().addAll(createSubScene(), sidePanel);
         splitPane.setDividerPositions(0.5f);
         actions.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        List<Point3D> homePoints = HomePoints3D.homePoints();
-        Runnable r = () -> {
-        };
-        Spheres.spheres().redSphere().move(homePoints.get(0), homePoints.get(1), 6, r);
-        Spheres.spheres().silverSphere().move(homePoints.get(1), homePoints.get(3), 6, r);
-        Spheres.spheres().blueSphere().move(homePoints.get(3), homePoints.get(0), 6, r);
-        Spheres.spheres().greenSphere().move(homePoints.get(2), homePoints.get(2), 6, r);
     }
 
     private SubScene createSubScene() {
@@ -138,11 +139,33 @@ public class PermutationView {
         actions.getSelectionModel().selectedItemProperty().addListener(changeListener);
     }
 
+    public void setOnAnimationFinished(Runnable onFinished) {
+        this.onFinished = onFinished;
+    }
+
     public void setSelectedAction(ActionSequence actions) {
         selectInListView(actions);
-        for (Action action : actions.actions()) {
-            if (action instanceof MoveAction) {
-//                action.move()
+        runNextAction(new ArrayDeque<>(actions.actions()));
+    }
+
+    private void runNextAction(Deque<Action> actions) {
+        Action action = actions.pollFirst();
+        if (action == null) {
+            onFinished.run();
+        }
+        if (action instanceof WaitAction) {
+            PauseTransition wait = new PauseTransition(Duration.millis(250));
+            wait.setOnFinished(e -> runNextAction(actions));
+            wait.play();
+        }
+        AtomicInteger count = new AtomicInteger(4);
+        if (action instanceof MoveAction) {
+            for (Mover mover : ((MoveAction) action).movers()) {
+                Spheres.spheres().get(mover.color()).move(mover.source(), mover.target(), 3, () -> {
+                    if (count.decrementAndGet() == 0) {
+                        runNextAction(actions);
+                    }
+                });
             }
         }
     }
