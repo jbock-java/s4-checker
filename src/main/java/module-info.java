@@ -1,4 +1,4 @@
-module hellofx {
+module uppufx {
     requires javafx.controls;
     requires io.parmigiano;
     requires io.jbock.util;
@@ -6,4 +6,5 @@ module hellofx {
 
     exports uppu;
     exports uppu.model;
+    exports uppu.test;
 }

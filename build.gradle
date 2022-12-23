@@ -30,3 +30,14 @@ jlink {
         name = 'uppu'
     }
 }
+
+configurations {
+    testCompile
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events('failed')
+    }
+}

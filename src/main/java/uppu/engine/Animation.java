@@ -95,11 +95,11 @@ public final class Animation {
     }
 
     public void setRunning(boolean running) {
-        if (running) {
-            timer.start();
-            return;
-        }
-        timer.stop();
+//        if (running) {
+//            timer.start();
+//            return;
+//        }
+//        timer.stop();
     }
 
     public void select(ActionSequence action) {
@@ -110,7 +110,7 @@ public final class Animation {
                 cleanCurrent();
             }
         }
-        timer.start();
+//        timer.start();
     }
 
     public void setOnNext(Consumer<ActionSequence> onNext) {

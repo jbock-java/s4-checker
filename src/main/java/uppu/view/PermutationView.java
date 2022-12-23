@@ -2,9 +2,12 @@ package uppu.view;
 
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
+import javafx.geometry.Point3D;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
+import javafx.scene.SubScene;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -17,11 +20,13 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import uppu.model.ActionSequence;
 import uppu.model.HomePoints;
+import uppu.model.HomePoints3D;
+import uppu.model.Spheres;
 
 import java.net.URL;
 import java.util.List;
@@ -29,6 +34,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import static javafx.collections.FXCollections.observableArrayList;
+import static uppu.model.Spheres.spheres;
 
 public class PermutationView {
 
@@ -40,8 +46,6 @@ public class PermutationView {
     private static final int HEIGHT_BUTTON_PANE = 20;
     
     private static final Color GRAY = Color.rgb(64, 64, 64);
-
-    private final Canvas canvas = new Canvas(WIDTH_CANVAS, HEIGHT);
 
     private final ListView<ActionSequence> actions = new ListView<>();
     private final Stage stage;
@@ -79,11 +83,6 @@ public class PermutationView {
     }
 
     private void createElements() {
-        StackPane canvasPane = new StackPane();
-        canvasPane.setMaxWidth(WIDTH_CANVAS);
-        canvasPane.setMinWidth(WIDTH_CANVAS);
-        canvasPane.getChildren().add(canvas);
-        canvasPane.setBackground(new Background(new BackgroundFill(GRAY, null, null)));
         sidePanel.setMinWidth(WIDTH_PANEL);
         sidePanel.setBackground(new Background(new BackgroundFill(GRAY, null, null)));
         sidePanel.setCenter(actions);
@@ -91,13 +90,41 @@ public class PermutationView {
         buttonPanel.setAlignment(Pos.BASELINE_CENTER);
         buttonPanel.add(pauseButton, 0, 0);
         buttonPanel.add(editButton, 1, 0);
-        splitPane.getItems().addAll(canvasPane, sidePanel);
-        splitPane.setDividerPositions(0.5f, 0.5f);
+        splitPane.getItems().addAll(createSubScene(), sidePanel);
+        splitPane.setDividerPositions(0.5f);
         actions.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        List<Point3D> homePoints = HomePoints3D.homePoints();
+        Runnable r = () -> {
+        };
+        Spheres.spheres().redSphere().move(homePoints.get(0), homePoints.get(1), r);
+        Spheres.spheres().greenSphere().move(homePoints.get(1), homePoints.get(2), r);
+        Spheres.spheres().blueSphere().move(homePoints.get(2), homePoints.get(3), r);
+        Spheres.spheres().silverSphere().move(homePoints.get(3), homePoints.get(0), r);
+    }
+
+    private SubScene createSubScene() {
+        // Create and position camera
+        PerspectiveCamera camera = new PerspectiveCamera(true);
+        camera.getTransforms().addAll(
+                new Translate(1.5f, 0, -50));
+
+        // Build the Scene Graph
+        Group root = new Group();
+        root.getChildren().add(camera);
+        root.getChildren().add(spheres().redSphere().sphere());
+        root.getChildren().add(spheres().blueSphere().sphere());
+        root.getChildren().add(spheres().greenSphere().sphere());
+        root.getChildren().add(spheres().silverSphere().sphere());
+
+        // Use a SubScene
+        SubScene subScene = new SubScene(root, WIDTH_CANVAS, HEIGHT);
+        subScene.setFill(GRAY);
+        subScene.setCamera(camera);
+        return subScene;
     }
 
     public GraphicsContext getGraphicsContext() {
-        return canvas.getGraphicsContext2D();
+        throw new UnsupportedOperationException();
     }
 
     public void setTitle(String title) {
