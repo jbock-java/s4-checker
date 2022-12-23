@@ -6,5 +6,4 @@ module uppufx {
 
     exports uppu;
     exports uppu.model;
-    exports uppu.test;
 }

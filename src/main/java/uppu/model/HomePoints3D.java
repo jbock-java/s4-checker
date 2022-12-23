@@ -1,14 +1,15 @@
 package uppu.model;
 
 import javafx.geometry.Point3D;
-import uppu.util.Suppliers;
 
 import java.util.List;
 import java.util.function.Supplier;
 
+import static uppu.util.Suppliers.memoize;
+
 public final class HomePoints3D {
 
-    private static final Supplier<List<Point3D>> HOME_POINTS = Suppliers.memoize(() ->
+    private static final Supplier<List<Point3D>> HOME_POINTS = memoize(() ->
             getHomePoints().stream().map(p -> p.multiply(10)).toList());
 
     public static List<Point3D> homePoints() {

@@ -97,9 +97,9 @@ public class PermutationView {
         Runnable r = () -> {
         };
         Spheres.spheres().redSphere().move(homePoints.get(0), homePoints.get(1), r);
-        Spheres.spheres().greenSphere().move(homePoints.get(1), homePoints.get(2), r);
-        Spheres.spheres().blueSphere().move(homePoints.get(2), homePoints.get(3), r);
-        Spheres.spheres().silverSphere().move(homePoints.get(3), homePoints.get(0), r);
+        Spheres.spheres().silverSphere().move(homePoints.get(1), homePoints.get(3), r);
+        Spheres.spheres().blueSphere().move(homePoints.get(3), homePoints.get(0), r);
+        Spheres.spheres().greenSphere().move(homePoints.get(2), homePoints.get(2), r);
     }
 
     private SubScene createSubScene() {

@@ -1,5 +1,9 @@
 package uppu.model;
 
+import java.util.function.Supplier;
+
+import static uppu.util.Suppliers.memoize;
+
 public final class Spheres {
 
     private final Ball redSphere = new Ball(Color.RED);
@@ -7,13 +11,10 @@ public final class Spheres {
     private final Ball blueSphere = new Ball(Color.BLUE);
     private final Ball silverSphere = new Ball(Color.SILVER);
 
-    private static Spheres INSTANCE;
+    private static final Supplier<Spheres> INSTANCE = memoize(Spheres::new);
 
     public static Spheres spheres() {
-        if (INSTANCE == null) {
-            INSTANCE = new Spheres();
-        }
-        return INSTANCE;
+        return INSTANCE.get();
     }
 
     public Ball redSphere() {
