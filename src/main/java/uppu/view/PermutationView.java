@@ -27,7 +27,6 @@ import javafx.util.Duration;
 import uppu.engine.Mover;
 import uppu.model.Action;
 import uppu.model.ActionSequence;
-import uppu.model.HomePoints;
 import uppu.model.MoveAction;
 import uppu.model.Spheres;
 import uppu.model.WaitAction;
@@ -45,8 +44,8 @@ import static uppu.model.Spheres.spheres;
 
 public class PermutationView {
 
-    private static final int WIDTH_CANVAS = (int) (280 * HomePoints.SCALE);
-    private static final int HEIGHT = (int) (300 * HomePoints.SCALE);
+    private static final int WIDTH_CANVAS = 560;
+    private static final int HEIGHT = 600;
     private static final int WIDTH_PANEL = 500;
     private static final int HEIGHT_SLIDER = 12;
     private static final int INITIAL_SPEED = 16;
