@@ -44,7 +44,7 @@ public class PermutationView {
     private static final int HEIGHT_SLIDER = 12;
     private static final int INITIAL_SPEED = 16;
     private static final int HEIGHT_BUTTON_PANE = 20;
-    
+
     private static final Color GRAY = Color.rgb(64, 64, 64);
 
     private final ListView<ActionSequence> actions = new ListView<>();
@@ -96,10 +96,10 @@ public class PermutationView {
         List<Point3D> homePoints = HomePoints3D.homePoints();
         Runnable r = () -> {
         };
-        Spheres.spheres().redSphere().move(homePoints.get(0), homePoints.get(1), r);
-        Spheres.spheres().silverSphere().move(homePoints.get(1), homePoints.get(3), r);
-        Spheres.spheres().blueSphere().move(homePoints.get(3), homePoints.get(0), r);
-        Spheres.spheres().greenSphere().move(homePoints.get(2), homePoints.get(2), r);
+        Spheres.spheres().redSphere().move(homePoints.get(0), homePoints.get(1), 6, r);
+        Spheres.spheres().silverSphere().move(homePoints.get(1), homePoints.get(3), 6, r);
+        Spheres.spheres().blueSphere().move(homePoints.get(3), homePoints.get(0), 6, r);
+        Spheres.spheres().greenSphere().move(homePoints.get(2), homePoints.get(2), 6, r);
     }
 
     private SubScene createSubScene() {

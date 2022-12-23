@@ -23,6 +23,7 @@ public class Ball {
     public void move(
             Point3D source,
             Point3D target,
+            int seconds,
             Runnable onSuccess) {
 
         DoubleProperty x = sphere.translateXProperty();
@@ -34,7 +35,7 @@ public class Ball {
                         new KeyValue(x, source.getX()),
                         new KeyValue(y, source.getY()),
                         new KeyValue(z, source.getZ())),
-                new KeyFrame(Duration.seconds(6),
+                new KeyFrame(Duration.seconds(seconds),
                         new KeyValue(x, target.getX(), Interpolator.LINEAR),
                         new KeyValue(y, target.getY(), Interpolator.LINEAR),
                         new KeyValue(z, target.getZ(), Interpolator.LINEAR)));

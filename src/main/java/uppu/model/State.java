@@ -1,6 +1,7 @@
 package uppu.model;
 
 import io.parmigiano.Permutation;
+import javafx.geometry.Point3D;
 import uppu.engine.Mover;
 import uppu.model.Command.MoveCommand;
 import uppu.model.Command.WaitCommand;
@@ -11,15 +12,15 @@ import java.util.List;
 public final class State {
 
     private final Quadruple quadruple;
-    private final List<Point> homePoints;
+    private final List<Point3D> homePoints;
 
-    private State(Quadruple quadruple, List<Point> homePoints) {
+    private State(Quadruple quadruple, List<Point3D> homePoints) {
         this.quadruple = quadruple;
         this.homePoints = homePoints;
     }
 
     public static State create(int n) {
-        return new State(Quadruple.create(), HomePoints.homePoints(n));
+        return new State(Quadruple.create(), HomePoints3D.homePoints());
     }
 
     public State offset(int x, int y) {
@@ -28,10 +29,6 @@ public final class State {
 
     public List<ActionSequence> getActions(List<CommandSequence> sequences) {
         List<Color> state = Color.colors(homePoints.size());
-        for (int i = 0; i < state.size(); i++) {
-            Point p = homePoints.get(i);
-            quadruple.set(state.get(i), p.x(), p.y(), p.z());
-        }
         List<ActionSequence> actionSequences = new ArrayList<>();
         for (CommandSequence sequence : sequences) {
             List<Action> actions = new ArrayList<>(sequence.commands().size());
@@ -70,9 +67,9 @@ public final class State {
         for (int i = 0; i < state.size(); i++) {
             Color color = state.get(i);
             int j = p.apply(i);
-            Point sourceSlot = homePoints.get(i);
-            Point targetSlot = homePoints.get(j);
-            movers.add(Mover.create(color, quadruple, sourceSlot, targetSlot));
+            Point3D sourceSlot = homePoints.get(i);
+            Point3D targetSlot = homePoints.get(j);
+            movers.add(new Mover(color, sourceSlot, targetSlot));
             newColors[j] = color;
         }
         return new ActionWithState(MoveAction.create(this, movers), List.of(newColors));
@@ -82,7 +79,7 @@ public final class State {
         return quadruple;
     }
 
-    public List<Point> homePoints() {
+    public List<Point3D> homePoints() {
         return homePoints;
     }
 }

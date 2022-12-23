@@ -1,5 +1,7 @@
 package uppu.model;
 
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import static uppu.util.Suppliers.memoize;
@@ -31,5 +33,18 @@ public final class Spheres {
 
     public Ball silverSphere() {
         return silverSphere;
+    }
+
+    private final Supplier<Map<Color, Ball>> byColor = memoize(() -> {
+        EnumMap<Color, Ball> m = new EnumMap<>(Color.class);
+        m.put(Color.GREEN, greenSphere);
+        m.put(Color.RED, redSphere);
+        m.put(Color.BLUE, blueSphere);
+        m.put(Color.SILVER, silverSphere);
+        return m;
+    });
+
+    public Ball get(Color color) {
+        return byColor.get().get(color);
     }
 }

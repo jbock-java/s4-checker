@@ -15,16 +15,9 @@ public class Movers {
     }
 
     public boolean move() {
-        boolean result = false;
-        for (Mover m : movers) {
-            result |= m.move();
-        }
-        return result;
+        return false;
     }
 
     public void init() {
-        for (Mover m : movers) {
-            m.init();
-        }
     }
 }

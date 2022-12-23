@@ -35,10 +35,6 @@ public abstract class Action {
             g.setFill(color.awtColor());
             g.fillOval(x, y, ELLIPSE.ballSize, ELLIPSE.ballSize);
         }
-        for (int i = 0; i < colors.length; i++) {
-            g.setFill(colors[i].awtColor());
-            state.homePoints().get(i).paintHome(g, quadruple);
-        }
     }
 
     record OffsetEllipse(
