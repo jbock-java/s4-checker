@@ -1,7 +1,6 @@
 package uppu.view;
 
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -9,6 +8,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.KeyCode;
@@ -25,6 +25,7 @@ import uppu.model.HomePoints;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import static javafx.collections.FXCollections.observableArrayList;
@@ -51,7 +52,9 @@ public class PermutationView {
     private final BorderPane sidePanel = new BorderPane();
     private final Button pauseButton = new Button("Pause");
     private final Button editButton = new Button("Edit");
-
+    Consumer<ActionSequence> onSelected = action -> {
+    };
+    private final ChangeListener<ActionSequence> changeListener = (observable, oldValue, newValue) -> onSelected.accept(newValue);
     private PermutationView(Stage stage) {
         this.stage = stage;
     }
@@ -70,7 +73,7 @@ public class PermutationView {
                 stage.close();
             }
         });
-        URL style = getClass().getResource("/uppu/css/style.css");
+        URL style = Objects.requireNonNull(getClass().getResource("/uppu/css/style.css"));
         scene.getStylesheets().add(style.toExternalForm());
         stage.setScene(scene);
     }
@@ -90,6 +93,7 @@ public class PermutationView {
         buttonPanel.add(editButton, 1, 0);
         splitPane.getItems().addAll(canvasPane, sidePanel);
         splitPane.setDividerPositions(0.5f, 0.5f);
+        actions.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
     }
 
     public GraphicsContext getGraphicsContext() {
@@ -100,20 +104,15 @@ public class PermutationView {
         stage.setTitle(title);
     }
 
-    public void setOnActionSelected(Consumer<ActionSequence> consumer) {
-        actions.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ActionSequence>() {
-            @Override
-            public void changed(
-                    ObservableValue<? extends ActionSequence> observable,
-                    ActionSequence oldValue, 
-                    ActionSequence newValue) {
-                consumer.accept(newValue);
-            }
-        });
+    public void setOnActionSelected(Consumer<ActionSequence> onSelected) {
+        this.onSelected = onSelected;
+        actions.getSelectionModel().selectedItemProperty().addListener(changeListener);
     }
 
     public void setSelectedAction(ActionSequence action) {
+        actions.getSelectionModel().selectedItemProperty().removeListener(changeListener);
         actions.getSelectionModel().select(action);
+        actions.getSelectionModel().selectedItemProperty().addListener(changeListener);
     }
 
     public void setActions(List<ActionSequence> actions) {

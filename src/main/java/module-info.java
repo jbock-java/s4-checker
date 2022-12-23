@@ -5,4 +5,5 @@ module hellofx {
     requires net.jbock;
 
     exports uppu;
+    exports uppu.model;
 }

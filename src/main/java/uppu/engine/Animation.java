@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 
 public final class Animation {
 
-    private AnimationTimer timer = new AnimationTimer() {
+    private final AnimationTimer timer = new AnimationTimer() {
         @Override
         public void handle(long now) {
             if (onTimerTick()) {
@@ -80,9 +80,6 @@ public final class Animation {
             return;
         }
         view.setTitle(actionSequence.title());
-        if (current == 0) {
-            return;
-        }
         actionSequence.init();
     }
 
@@ -113,6 +110,7 @@ public final class Animation {
                 cleanCurrent();
             }
         }
+        timer.start();
     }
 
     public void setOnNext(Consumer<ActionSequence> onNext) {
