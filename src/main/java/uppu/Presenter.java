@@ -12,17 +12,14 @@ public class Presenter {
 
     private final PermutationView view;
     private final CommandLine commandLine;
-    private final State state;
     private final Animation animation;
 
     Presenter(
             PermutationView view,
             CommandLine commandLine,
-            State state,
             Animation animation) {
         this.view = view;
         this.commandLine = commandLine;
-        this.state = state;
         this.animation = animation;
     }
 

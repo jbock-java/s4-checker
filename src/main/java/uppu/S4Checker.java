@@ -9,7 +9,6 @@ import javafx.stage.Stage;
 import uppu.engine.Animation;
 import uppu.model.ActionSequence;
 import uppu.model.CommandSequence;
-import uppu.model.HomePoints;
 import uppu.model.State;
 import uppu.parse.LineParser;
 import uppu.parse.Row;
@@ -35,12 +34,11 @@ public class S4Checker extends Application {
                     alert.showAndWait();
                 },
                 sequences -> {
-                    State state = State.create(4).offset((int) (25 * HomePoints.SCALE), (int) (20 * HomePoints.SCALE));
-                    List<ActionSequence> actions = state.getActions(sequences);
+                    List<ActionSequence> actions = State.create().getActions(sequences);
                     PermutationView view = PermutationView.create(stage);
                     view.init();
                     stage.show();
-                    new Presenter(view, commandLine, state, Animation.create(view)).run(actions);
+                    new Presenter(view, commandLine, Animation.create(view)).run(actions);
                 });
     }
 

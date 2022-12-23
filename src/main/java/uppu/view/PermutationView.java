@@ -23,9 +23,11 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
+import uppu.model.Action;
 import uppu.model.ActionSequence;
 import uppu.model.HomePoints;
 import uppu.model.HomePoints3D;
+import uppu.model.MoveAction;
 import uppu.model.Spheres;
 
 import java.net.URL;
@@ -136,9 +138,18 @@ public class PermutationView {
         actions.getSelectionModel().selectedItemProperty().addListener(changeListener);
     }
 
-    public void setSelectedAction(ActionSequence action) {
+    public void setSelectedAction(ActionSequence actions) {
+        selectInListView(actions);
+        for (Action action : actions.actions()) {
+            if (action instanceof MoveAction) {
+//                action.move()
+            }
+        }
+    }
+
+    private void selectInListView(ActionSequence actionSequence) {
         actions.getSelectionModel().selectedItemProperty().removeListener(changeListener);
-        actions.getSelectionModel().select(action);
+        actions.getSelectionModel().select(actionSequence);
         actions.getSelectionModel().selectedItemProperty().addListener(changeListener);
     }
 

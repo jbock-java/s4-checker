@@ -28,6 +28,10 @@ public final class ActionSequence {
         return actions.get(current);
     }
 
+    public List<Action> actions() {
+        return actions;
+    }
+
     public void increment() {
         current++;
     }

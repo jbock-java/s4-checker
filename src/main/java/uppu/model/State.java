@@ -11,20 +11,14 @@ import java.util.List;
 
 public final class State {
 
-    private final Quadruple quadruple;
     private final List<Point3D> homePoints;
 
-    private State(Quadruple quadruple, List<Point3D> homePoints) {
-        this.quadruple = quadruple;
+    private State(List<Point3D> homePoints) {
         this.homePoints = homePoints;
     }
 
-    public static State create(int n) {
-        return new State(Quadruple.create(), HomePoints3D.homePoints());
-    }
-
-    public State offset(int x, int y) {
-        return new State(quadruple.offset(x, y), homePoints);
+    public static State create() {
+        return new State(HomePoints3D.homePoints());
     }
 
     public List<ActionSequence> getActions(List<CommandSequence> sequences) {
@@ -73,13 +67,5 @@ public final class State {
             newColors[j] = color;
         }
         return new ActionWithState(MoveAction.create(this, movers), List.of(newColors));
-    }
-
-    public Quadruple quadruple() {
-        return quadruple;
-    }
-
-    public List<Point3D> homePoints() {
-        return homePoints;
     }
 }

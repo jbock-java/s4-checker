@@ -52,11 +52,6 @@ public final class Animation {
             }
             return false;
         }
-        boolean anyMove = action.move();
-        if (!anyMove) {
-            actionSequence.increment();
-            return false;
-        }
         return true;
     }
 
@@ -69,8 +64,6 @@ public final class Animation {
         if (action == null) {
             return;
         }
-        GraphicsContext g = view.getGraphicsContext();
-        action.show(g);
     }
 
     private void cleanCurrent() {
