@@ -3,6 +3,7 @@ package uppu.view;
 import javafx.animation.PauseTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
+import javafx.geometry.Point3D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
@@ -21,6 +22,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -108,7 +110,9 @@ public class PermutationView {
         // Create and position camera
         PerspectiveCamera camera = new PerspectiveCamera(true);
         camera.getTransforms().addAll(
-                new Translate(1.5f, 0, -50));
+                new Translate(-0.5f, 0, -50),
+                new Rotate(-15, new Point3D(1, 0, 0)),
+                new Rotate(5, new Point3D(0, 1, 0)));
 
         // Build the Scene Graph
         Group root = new Group();
@@ -123,10 +127,6 @@ public class PermutationView {
         subScene.setFill(GRAY);
         subScene.setCamera(camera);
         return subScene;
-    }
-
-    public GraphicsContext getGraphicsContext() {
-        throw new UnsupportedOperationException();
     }
 
     public void setTitle(String title) {
@@ -179,5 +179,9 @@ public class PermutationView {
         ObservableList<ActionSequence> data = observableArrayList();
         data.addAll(actions);
         this.actions.setItems(data);
+    }
+
+    public void setRunning(boolean running) {
+        // TODO
     }
 }

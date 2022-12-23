@@ -21,19 +21,13 @@ public enum Color {
     ;
 
     private final javafx.scene.paint.Color awtColor;
-    private final javafx.scene.paint.Color glowColor;
 
     Color(javafx.scene.paint.Color awtColor) {
         this.awtColor = awtColor;
-        this.glowColor = awtColor.darker();
     }
 
     public javafx.scene.paint.Color awtColor() {
         return awtColor;
-    }
-
-    public javafx.scene.paint.Color glowColor() {
-        return glowColor;
     }
 
     public static List<Color> colors(int n) {

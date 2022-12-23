@@ -1,5 +1,6 @@
 package uppu.model;
 
+import io.parmigiano.Permutation;
 import javafx.geometry.Point3D;
 
 import java.util.List;
@@ -10,7 +11,13 @@ import static uppu.util.Suppliers.memoize;
 public final class HomePoints3D {
 
     private static final Supplier<List<Point3D>> HOME_POINTS = memoize(() ->
-            getHomePoints().stream().map(p -> p.multiply(10)).toList());
+            getHomePoints().stream()
+                    .map(p -> p.multiply(10))
+                    .map(p -> permute(p, Permutation.cycle(0, 1).compose(0, 2)))
+                    .map(p -> new Point3D(p.getX(), -p.getY(), p.getZ()))
+                    .map(p -> new Point3D(p.getX(), 15 + p.getY(), p.getZ()))
+                    .map(p -> new Point3D(p.getX() + 4, p.getY(), p.getZ()))
+                    .toList());
 
     public static List<Point3D> homePoints() {
         return HOME_POINTS.get();
@@ -24,6 +31,12 @@ public final class HomePoints3D {
                 new Point3D(-r0, r1, -1f / 3f),
                 new Point3D(-r0, -r1, -1f / 3f),
                 new Point3D(0, 0, 1));
+    }
+
+    private static Point3D permute(Point3D point, Permutation p) {
+        List<Double> doubles = List.of(point.getX(), point.getY(), point.getZ());
+        List<Double> result = p.apply(doubles);
+        return new Point3D(result.get(0), result.get(1), result.get(2));
     }
 
     private HomePoints3D() {

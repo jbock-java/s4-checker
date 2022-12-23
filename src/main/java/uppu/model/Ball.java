@@ -13,7 +13,7 @@ import javafx.util.Duration;
 
 public class Ball {
 
-    private final Sphere sphere = new Sphere(1.5f);
+    private final Sphere sphere = new Sphere(2f);
 
     Ball(Color color) {
         this.sphere.setMaterial(new PhongMaterial(color.awtColor()));

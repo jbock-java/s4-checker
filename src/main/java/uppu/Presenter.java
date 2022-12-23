@@ -1,28 +1,22 @@
 package uppu;
 
 import javafx.application.Platform;
-import uppu.engine.Animation;
 import uppu.model.ActionSequence;
-import uppu.model.State;
 import uppu.view.PermutationView;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Presenter {
 
     private final PermutationView view;
     private final CommandLine commandLine;
-    private final Animation animation;
 
     Presenter(
             PermutationView view,
-            CommandLine commandLine,
-            Animation animation) {
+            CommandLine commandLine) {
         this.view = view;
         this.commandLine = commandLine;
-        this.animation = animation;
     }
 
     public void run(List<ActionSequence> actions) {
@@ -40,13 +34,12 @@ public class Presenter {
         });
         Platform.runLater(() -> {
             setRunning(true);
-            animation.setActions(actions);
             view.setActions(actions);
             actions.stream().findFirst().ifPresent(view::setSelectedAction);
         });
     }
 
     private void setRunning(boolean running) {
-        animation.setRunning(running);
+        view.setRunning(running);
     }
 }

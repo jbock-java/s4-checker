@@ -6,7 +6,6 @@ import javafx.application.Application;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
-import uppu.engine.Animation;
 import uppu.model.ActionSequence;
 import uppu.model.CommandSequence;
 import uppu.model.State;
@@ -38,7 +37,7 @@ public class S4Checker extends Application {
                     PermutationView view = PermutationView.create(stage);
                     view.init();
                     stage.show();
-                    new Presenter(view, commandLine, Animation.create(view)).run(actions);
+                    new Presenter(view, commandLine).run(actions);
                 });
     }
 
