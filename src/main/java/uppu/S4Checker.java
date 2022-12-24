@@ -54,6 +54,9 @@ public class S4Checker extends Application {
                 return parsed.map(x -> List.of());
             }
             Row row = parsed.getRight().orElseThrow();
+            if (row.permutations(current).isEmpty()) {
+                continue;
+            }
             CommandSequence.Result r = CommandSequence.toSequence(row, current);
             result.add(r.sequence());
             current = r.permutation().compose(current);

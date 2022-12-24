@@ -32,6 +32,10 @@ public class Ball {
         DoubleProperty y = sphere.translateYProperty();
         DoubleProperty z = sphere.translateZProperty();
 
+        if (tl != null) {
+            tl.stop();
+        }
+
         tl = new Timeline(
                 new KeyFrame(Duration.ZERO,
                         new KeyValue(x, source.getX()),
@@ -64,6 +68,7 @@ public class Ball {
             return;
         }
         tl.stop();
+        tl = null;
     }
 
     public Sphere sphere() {

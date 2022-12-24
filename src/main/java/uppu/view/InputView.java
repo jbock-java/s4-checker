@@ -9,11 +9,14 @@ import javafx.stage.StageStyle;
 import uppu.model.ActionSequence;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 
 public class InputView {
 
     private static final int HEIGHT_TEXTAREA = 600;
+    private final Stage stage = new Stage(StageStyle.DECORATED);
     private final TextArea textArea = new TextArea();
     private final Button saveButton = new Button("Save");
     private final BorderPane borderPane = new BorderPane();
@@ -22,11 +25,12 @@ public class InputView {
     }
 
     public static InputView create() {
-        return new InputView();
+        InputView result = new InputView();
+        result.init();
+        return result;
     }
 
-    public void init() {
-        Stage stage = new Stage(StageStyle.DECORATED);
+    private void init() {
         stage.setTitle("Edit");
         stage.setScene(createScene());
         stage.show();
@@ -43,5 +47,17 @@ public class InputView {
             textArea.appendText(action.toString());
             textArea.appendText(System.lineSeparator());
         }
+    }
+
+    public void setOnSave(Consumer<List<String>> consumer) {
+        saveButton.setOnMouseClicked(e -> {
+            String text = textArea.getText();
+            String[] lines = text.split("\\R", -1);
+            consumer.accept(Stream.of(lines).filter(line -> !line.isEmpty()).toList());
+        });
+    }
+
+    public void close() {
+        stage.close();
     }
 }

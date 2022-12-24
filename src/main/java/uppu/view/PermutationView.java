@@ -21,7 +21,6 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.Sphere;
@@ -32,6 +31,7 @@ import javafx.util.Duration;
 import uppu.engine.Mover;
 import uppu.model.Action;
 import uppu.model.ActionSequence;
+import uppu.model.Color;
 import uppu.model.HomePoints;
 
 import java.net.URL;
@@ -55,7 +55,7 @@ public class PermutationView {
     private static final int INITIAL_SPEED = 16;
     private static final int HEIGHT_BUTTON_PANE = 20;
 
-    private static final Color GRAY = Color.rgb(64, 64, 64);
+    private static final javafx.scene.paint.Color GRAY = javafx.scene.paint.Color.rgb(64, 64, 64);
 
     private final ListView<ActionSequence> actions = new ListView<>();
     private final Stage stage;
@@ -119,7 +119,7 @@ public class PermutationView {
         // Build the Scene Graph
         Group root = new Group();
         root.getChildren().add(camera);
-        for (uppu.model.Color color : uppu.model.Color.getValues()) {
+        for (Color color : Color.getValues()) {
             Sphere colorHome = new Sphere(0.2f);
             colorHome.setMaterial(new PhongMaterial(color.awtColor()));
             colorHome.setDrawMode(DrawMode.FILL);
@@ -129,7 +129,7 @@ public class PermutationView {
             colorHome.getTransforms().add(new Translate(home.getX(), home.getY(), home.getZ()));
             root.getChildren().add(colorHome);
         }
-        for (uppu.model.Color color : uppu.model.Color.getValues()) {
+        for (Color color : Color.getValues()) {
             root.getChildren().add(spheres().get(color).sphere());
         }
 
@@ -190,7 +190,9 @@ public class PermutationView {
     public void setActions(List<ActionSequence> actions) {
         ObservableList<ActionSequence> data = observableArrayList();
         data.addAll(actions);
+        this.actions.getSelectionModel().selectedItemProperty().removeListener(changeListener);
         this.actions.setItems(data);
+        this.actions.getSelectionModel().selectedItemProperty().addListener(changeListener);
     }
 
     public void setOnEditButtonClicked(Runnable onClick) {
@@ -202,13 +204,13 @@ public class PermutationView {
     }
 
     public void setRunning(boolean running) {
-        for (uppu.model.Color color : uppu.model.Color.getValues()) {
+        for (Color color : Color.getValues()) {
             color.ball().setRunning(running);
         }
     }
 
     public void stop() {
-        for (uppu.model.Color color : uppu.model.Color.getValues()) {
+        for (Color color : Color.getValues()) {
             color.ball().stop();
         }
     }
