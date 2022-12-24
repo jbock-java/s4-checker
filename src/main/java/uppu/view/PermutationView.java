@@ -21,8 +21,6 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
@@ -120,12 +118,8 @@ public class PermutationView {
         Group root = new Group();
         root.getChildren().add(camera);
         for (Color color : Color.getValues()) {
-            Sphere colorHome = new Sphere(0.2f);
-            colorHome.setMaterial(new PhongMaterial(color.awtColor()));
-            colorHome.setDrawMode(DrawMode.FILL);
             Point3D home = HomePoints.homePoint(color);
-            Point3D move = CAMERA_POINT.subtract(home).multiply(0.2);
-            home = home.add(move);
+            Sphere colorHome = spheres().getHome(color).sphere();
             colorHome.getTransforms().add(new Translate(home.getX(), home.getY(), home.getZ()));
             root.getChildren().add(colorHome);
         }
@@ -161,9 +155,7 @@ public class PermutationView {
     private void runNextAction(Deque<Action> actions) {
         Action action = actions.pollFirst();
         if (action == null) {
-            PauseTransition wait = new PauseTransition(Duration.millis(2000));
-            wait.setOnFinished(e -> onFinished.run());
-            wait.play();
+            onFinished.run();
             return;
         }
         if (action instanceof Action.WaitAction) {
@@ -214,6 +206,13 @@ public class PermutationView {
     public void stop() {
         for (Color color : Color.getValues()) {
             color.ball().stop();
+        }
+    }
+
+    public void setHomesVisible(
+            boolean visible) {
+        for (Color color : Color.getValues()) {
+            spheres().getHome(color).sphere().setVisible(visible);
         }
     }
 }

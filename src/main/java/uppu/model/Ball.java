@@ -13,13 +13,40 @@ import javafx.util.Duration;
 
 public class Ball {
 
-    private final Sphere sphere = new Sphere(1.2f);
+    private final Sphere sphere;
 
     private Timeline tl;
 
-    Ball(Color color) {
-        this.sphere.setMaterial(new PhongMaterial(color.awtColor()));
-        this.sphere.setDrawMode(DrawMode.FILL);
+    private Ball(Sphere sphere) {
+        this.sphere = sphere;
+    }
+
+    static class Builder {
+        private final Color color;
+        private final double radius;
+        private final DrawMode drawMode;
+
+        Builder(Color color, double radius, DrawMode drawMode) {
+            this.color = color;
+            this.radius = radius;
+            this.drawMode = drawMode;
+        }
+
+        Ball build() {
+            return build(64);    
+        }
+        
+        Ball build(int divisions) {
+            Sphere sphere = new Sphere(radius, divisions);
+            sphere.setMaterial(new PhongMaterial(color.awtColor()));
+            sphere.setDrawMode(drawMode);
+            return new Ball(sphere);
+        }
+    }
+    
+
+    static Builder create(Color color, double radius, DrawMode drawMode) {
+        return new Builder(color, radius, drawMode);
     }
 
     public void move(

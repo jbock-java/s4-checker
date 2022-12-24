@@ -1,8 +1,10 @@
 package uppu;
 
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.util.Duration;
 import uppu.model.ActionSequence;
 import uppu.model.State;
 import uppu.view.InputView;
@@ -36,10 +38,16 @@ public class Presenter {
         });
         view.setOnAnimationFinished(() -> {
             view.stop();
-            if (current < actions.size() - 1) {
-                current++;
-                view.setSelectedAction(actions.get(current));
-            }
+            view.setHomesVisible(true);
+            PauseTransition wait = new PauseTransition(Duration.millis(5000));
+            wait.setOnFinished(e -> {
+                if (current < actions.size() - 1) {
+                    current++;
+                    view.setHomesVisible(false);
+                    view.setSelectedAction(actions.get(current));
+                }
+            });
+            wait.play();
         });
         view.setOnPauseButtonClicked(() -> {
             running = !running;
@@ -66,6 +74,7 @@ public class Presenter {
             });
         });
         Platform.runLater(() -> {
+            view.setHomesVisible(false);
             setRunning(true);
             view.setActions(actions);
             actions.stream().findFirst().ifPresent(view::setSelectedAction);
