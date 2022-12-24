@@ -2,6 +2,7 @@ package uppu;
 
 import javafx.application.Platform;
 import uppu.model.ActionSequence;
+import uppu.view.InputView;
 import uppu.view.PermutationView;
 
 import java.util.List;
@@ -35,6 +36,12 @@ public class Presenter {
         view.setOnPauseButtonClicked(() -> {
             running = !running;
             view.setRunning(running);
+        });
+        view.setOnEditButtonClicked(() -> {
+            setRunning(false);
+            InputView inputView = InputView.create();
+            inputView.setContent(actions);
+            inputView.init();
         });
         Platform.runLater(() -> {
             setRunning(true);

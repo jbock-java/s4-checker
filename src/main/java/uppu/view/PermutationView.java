@@ -50,7 +50,7 @@ public class PermutationView {
     private static final Point3D CAMERA_POINT = new Point3D(-0.5f, 0, -25);
     private static final int WIDTH_CANVAS = 560;
     private static final int HEIGHT = 600;
-    private static final int WIDTH_PANEL = 500;
+    static final int WIDTH_PANEL = 500;
     private static final int HEIGHT_SLIDER = 12;
     private static final int INITIAL_SPEED = 16;
     private static final int HEIGHT_BUTTON_PANE = 20;
