@@ -15,6 +15,8 @@ public class Ball {
 
     private final Sphere sphere = new Sphere(1.2f);
 
+    private Timeline tl;
+
     Ball(Color color) {
         this.sphere.setMaterial(new PhongMaterial(color.awtColor()));
         this.sphere.setDrawMode(DrawMode.FILL);
@@ -30,7 +32,7 @@ public class Ball {
         DoubleProperty y = sphere.translateYProperty();
         DoubleProperty z = sphere.translateZProperty();
 
-        Timeline tl = new Timeline(
+        tl = new Timeline(
                 new KeyFrame(Duration.ZERO,
                         new KeyValue(x, source.getX()),
                         new KeyValue(y, source.getY()),
@@ -44,6 +46,24 @@ public class Ball {
         tl.setOnFinished(ev -> {
             onSuccess.run();
         });
+    }
+
+    public void setRunning(boolean running) {
+        if (tl == null) {
+            return;
+        }
+        if (running) {
+            tl.play();
+        } else {
+            tl.pause();
+        }
+    }
+
+    public void stop() {
+        if (tl == null) {
+            return;
+        }
+        tl.stop();
     }
 
     public Sphere sphere() {

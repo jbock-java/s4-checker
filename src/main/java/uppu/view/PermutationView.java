@@ -22,6 +22,9 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.PhongMaterial;
+import javafx.scene.shape.DrawMode;
+import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
@@ -29,6 +32,7 @@ import javafx.util.Duration;
 import uppu.engine.Mover;
 import uppu.model.Action;
 import uppu.model.ActionSequence;
+import uppu.model.HomePoints;
 
 import java.net.URL;
 import java.util.ArrayDeque;
@@ -43,6 +47,7 @@ import static uppu.model.Spheres.spheres;
 
 public class PermutationView {
 
+    private static final Point3D CAMERA_POINT = new Point3D(-0.5f, 0, -25);
     private static final int WIDTH_CANVAS = 560;
     private static final int HEIGHT = 600;
     private static final int WIDTH_PANEL = 500;
@@ -107,17 +112,26 @@ public class PermutationView {
         // Create and position camera
         PerspectiveCamera camera = new PerspectiveCamera(true);
         camera.getTransforms().addAll(
-                new Translate(-0.5f, 0, -25),
+                new Translate(CAMERA_POINT.getX(), CAMERA_POINT.getY(), CAMERA_POINT.getZ()),
                 new Rotate(-30, new Point3D(1, 0, 0)),
                 new Rotate(9, new Point3D(0, 1, 0)));
 
         // Build the Scene Graph
         Group root = new Group();
         root.getChildren().add(camera);
-        root.getChildren().add(spheres().redSphere().sphere());
-        root.getChildren().add(spheres().blueSphere().sphere());
-        root.getChildren().add(spheres().greenSphere().sphere());
-        root.getChildren().add(spheres().silverSphere().sphere());
+        for (uppu.model.Color color : uppu.model.Color.getValues()) {
+            Sphere colorHome = new Sphere(0.2f);
+            colorHome.setMaterial(new PhongMaterial(color.awtColor()));
+            colorHome.setDrawMode(DrawMode.FILL);
+            Point3D home = HomePoints.homePoint(color);
+            Point3D move = CAMERA_POINT.subtract(home).multiply(0.2);
+            home = home.add(move);
+            colorHome.getTransforms().add(new Translate(home.getX(), home.getY(), home.getZ()));
+            root.getChildren().add(colorHome);
+        }
+        for (uppu.model.Color color : uppu.model.Color.getValues()) {
+            root.getChildren().add(spheres().get(color).sphere());
+        }
 
         // Use a SubScene
         SubScene subScene = new SubScene(root, WIDTH_CANVAS, HEIGHT, true, SceneAntialiasing.DISABLED);
@@ -148,6 +162,7 @@ public class PermutationView {
         Action action = actions.pollFirst();
         if (action == null) {
             onFinished.run();
+            return;
         }
         if (action instanceof Action.WaitAction) {
             PauseTransition wait = new PauseTransition(Duration.millis(250));
@@ -178,7 +193,23 @@ public class PermutationView {
         this.actions.setItems(data);
     }
 
+    public void setOnEditButtonClicked(Runnable onClick) {
+        editButton.setOnMouseClicked(e -> onClick.run());
+    }
+
+    public void setOnPauseButtonClicked(Runnable onClick) {
+        pauseButton.setOnMouseClicked(e -> onClick.run());
+    }
+
     public void setRunning(boolean running) {
-        // TODO
+        for (uppu.model.Color color : uppu.model.Color.getValues()) {
+            color.ball().setRunning(running);
+        }
+    }
+
+    public void stop() {
+        for (uppu.model.Color color : uppu.model.Color.getValues()) {
+            color.ball().stop();
+        }
     }
 }

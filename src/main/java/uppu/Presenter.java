@@ -5,12 +5,13 @@ import uppu.model.ActionSequence;
 import uppu.view.PermutationView;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Presenter {
 
     private final PermutationView view;
     private final CommandLine commandLine;
+    private boolean running = true;
+    private int current = 0;
 
     Presenter(
             PermutationView view,
@@ -20,17 +21,20 @@ public class Presenter {
     }
 
     public void run(List<ActionSequence> actions) {
-        AtomicInteger current = new AtomicInteger(0);
         view.setOnActionSelected(action -> {
-//            int index = actions.indexOf(action);
-//            current.set(index);
-//            animation.select(action);
+            view.stop();
+            current = actions.indexOf(action);
+            view.setSelectedAction(action);
         });
         view.setOnAnimationFinished(() -> {
-            int index = current.incrementAndGet();
-            if (index < actions.size()) {
-                view.setSelectedAction(actions.get(index));
+            int i = ++current;
+            if (i < actions.size()) {
+                view.setSelectedAction(actions.get(i));
             }
+        });
+        view.setOnPauseButtonClicked(() -> {
+            running = !running;
+            view.setRunning(running);
         });
         Platform.runLater(() -> {
             setRunning(true);
