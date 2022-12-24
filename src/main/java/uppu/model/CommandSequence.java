@@ -28,8 +28,6 @@ public class CommandSequence {
             Permutation current) {
         List<Permutation> input = row.permutations(current);
         List<Command> abCommands = new ArrayList<>(input.size() * 2 + 1);
-        abCommands.add(Command.showState());
-        abCommands.add(Command.wait(80));
         Permutation product = Permutation.identity();
         for (int i = input.size() - 1; i >= 0; i--) {
             Permutation p = input.get(i);

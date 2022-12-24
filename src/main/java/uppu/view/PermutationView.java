@@ -161,11 +161,13 @@ public class PermutationView {
     private void runNextAction(Deque<Action> actions) {
         Action action = actions.pollFirst();
         if (action == null) {
-            onFinished.run();
+            PauseTransition wait = new PauseTransition(Duration.millis(2000));
+            wait.setOnFinished(e -> onFinished.run());
+            wait.play();
             return;
         }
         if (action instanceof Action.WaitAction) {
-            PauseTransition wait = new PauseTransition(Duration.millis(250));
+            PauseTransition wait = new PauseTransition(Duration.millis(80));
             wait.setOnFinished(e -> runNextAction(actions));
             wait.play();
         }
