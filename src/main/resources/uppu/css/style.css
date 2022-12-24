@@ -67,3 +67,15 @@
     padding: 0 0 1 0;
     -fx-background-insets: 1;
 }
+
+.text-area {
+    -fx-font: 18px Monospace;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+    -fx-display-caret: true;
+}
+
+.text-area .content{
+    -fx-background-color: #404040;
+    background-color: #404040;
+}

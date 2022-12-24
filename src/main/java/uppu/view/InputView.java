@@ -8,7 +8,9 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import uppu.model.ActionSequence;
 
+import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -39,7 +41,10 @@ public class InputView {
     private Scene createScene() {
         borderPane.setCenter(textArea);
         borderPane.setBottom(saveButton);
-        return new Scene(borderPane, PermutationView.WIDTH_PANEL * 2, HEIGHT_TEXTAREA);
+        URL style = Objects.requireNonNull(getClass().getResource("/uppu/css/style.css"));
+        Scene scene = new Scene(borderPane, PermutationView.WIDTH_PANEL * 2, HEIGHT_TEXTAREA);
+        scene.getStylesheets().add(style.toExternalForm());
+        return scene;
     }
 
     public void setContent(List<ActionSequence> actions) {
