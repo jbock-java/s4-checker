@@ -8,8 +8,8 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
@@ -29,9 +29,6 @@ import javafx.util.Duration;
 import uppu.engine.Mover;
 import uppu.model.Action;
 import uppu.model.ActionSequence;
-import uppu.model.MoveAction;
-import uppu.model.Spheres;
-import uppu.model.WaitAction;
 
 import java.net.URL;
 import java.util.ArrayDeque;
@@ -110,9 +107,9 @@ public class PermutationView {
         // Create and position camera
         PerspectiveCamera camera = new PerspectiveCamera(true);
         camera.getTransforms().addAll(
-                new Translate(-0.5f, 0, -50),
-                new Rotate(-15, new Point3D(1, 0, 0)),
-                new Rotate(5, new Point3D(0, 1, 0)));
+                new Translate(-0.5f, 0, -25),
+                new Rotate(-30, new Point3D(1, 0, 0)),
+                new Rotate(9, new Point3D(0, 1, 0)));
 
         // Build the Scene Graph
         Group root = new Group();
@@ -123,7 +120,7 @@ public class PermutationView {
         root.getChildren().add(spheres().silverSphere().sphere());
 
         // Use a SubScene
-        SubScene subScene = new SubScene(root, WIDTH_CANVAS, HEIGHT);
+        SubScene subScene = new SubScene(root, WIDTH_CANVAS, HEIGHT, true, SceneAntialiasing.DISABLED);
         subScene.setFill(GRAY);
         subScene.setCamera(camera);
         return subScene;
@@ -152,15 +149,15 @@ public class PermutationView {
         if (action == null) {
             onFinished.run();
         }
-        if (action instanceof WaitAction) {
+        if (action instanceof Action.WaitAction) {
             PauseTransition wait = new PauseTransition(Duration.millis(250));
             wait.setOnFinished(e -> runNextAction(actions));
             wait.play();
         }
         AtomicInteger count = new AtomicInteger(4);
-        if (action instanceof MoveAction) {
-            for (Mover mover : ((MoveAction) action).movers()) {
-                Spheres.spheres().get(mover.color()).move(mover.source(), mover.target(), 3, () -> {
+        if (action instanceof Action.MoveAction) {
+            for (Mover mover : ((Action.MoveAction) action).movers()) {
+                mover.ball().move(mover.source(), mover.target(), 3, () -> {
                     if (count.decrementAndGet() == 0) {
                         runNextAction(actions);
                     }

@@ -44,7 +44,7 @@ public final class Spheres {
         return m;
     });
 
-    public Ball get(Color color) {
+    Ball get(Color color) {
         return byColor.get().get(color);
     }
 }

@@ -30,6 +30,10 @@ public enum Color {
         return awtColor;
     }
 
+    public Ball ball() {
+        return Spheres.spheres().get(this);
+    }
+
     public static List<Color> colors(int n) {
         return Arrays.stream(values()).limit(n).toList();
     }
