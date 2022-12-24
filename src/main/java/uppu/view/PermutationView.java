@@ -119,12 +119,12 @@ public class PermutationView {
         root.getChildren().add(camera);
         for (Color color : Color.getValues()) {
             Point3D home = HomePoints.homePoint(color);
-            Sphere colorHome = spheres().getHome(color).sphere();
-            colorHome.getTransforms().add(new Translate(home.getX(), home.getY(), home.getZ()));
-            root.getChildren().add(colorHome);
-        }
-        for (Color color : Color.getValues()) {
-            root.getChildren().add(spheres().get(color).sphere());
+            Sphere homeSphere = spheres().getHome(color).sphere();
+            homeSphere.getTransforms().add(new Translate(home.getX(), home.getY(), home.getZ()));
+            root.getChildren().add(homeSphere);
+            Sphere sphere = spheres().get(color).sphere();
+            sphere.getTransforms().add(new Translate(home.getX(), home.getY(), home.getZ()));
+            root.getChildren().add(sphere);
         }
 
         // Use a SubScene

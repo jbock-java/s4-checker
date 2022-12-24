@@ -1,10 +1,8 @@
 package uppu;
 
-import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.util.Duration;
 import uppu.model.ActionSequence;
 import uppu.model.State;
 import uppu.view.InputView;
@@ -15,6 +13,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
+
+import static uppu.util.Delay.runDelayed;
 
 public class Presenter {
 
@@ -39,15 +39,13 @@ public class Presenter {
         view.setOnAnimationFinished(() -> {
             view.stop();
             view.setHomesVisible(true);
-            PauseTransition wait = new PauseTransition(Duration.millis(5000));
-            wait.setOnFinished(e -> {
+            runDelayed(5000, () -> {
                 if (current < actions.size() - 1) {
                     current++;
                     view.setHomesVisible(false);
                     view.setSelectedAction(actions.get(current));
                 }
             });
-            wait.play();
         });
         view.setOnPauseButtonClicked(() -> {
             running = !running;
@@ -73,11 +71,14 @@ public class Presenter {
                 inputView.close();
             });
         });
-        Platform.runLater(() -> {
-            view.setHomesVisible(false);
+        runDelayed(2000, () -> {
+            view.setHomesVisible(true);
             setRunning(true);
-            view.setActions(actions);
-            actions.stream().findFirst().ifPresent(view::setSelectedAction);
+            Platform.runLater(() -> {
+                view.setHomesVisible(false);
+                view.setActions(actions);
+                actions.stream().findFirst().ifPresent(view::setSelectedAction);
+            });
         });
     }
 
