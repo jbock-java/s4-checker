@@ -1,6 +1,7 @@
 package uppu.model;
 
 import javafx.scene.shape.DrawMode;
+import javafx.scene.shape.Sphere;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -8,7 +9,7 @@ import java.util.function.Supplier;
 
 import static uppu.util.Suppliers.memoize;
 
-public final class Spheres {
+final class Spheres {
 
     private final Ball redSphere = Ball.create(Color.RED, 1.2f, DrawMode.FILL).build();
     private final Ball greenSphere = Ball.create(Color.GREEN, 1.2f, DrawMode.FILL).build();
@@ -21,7 +22,7 @@ public final class Spheres {
 
     private static final Supplier<Spheres> INSTANCE = memoize(Spheres::new);
 
-    public static Spheres spheres() {
+    static Spheres spheres() {
         return INSTANCE.get();
     }
 
@@ -43,11 +44,11 @@ public final class Spheres {
         return m;
     });
 
-    public Ball get(Color color) {
+    Ball get(Color color) {
         return byColor.get().get(color);
     }
 
-    public Ball getHome(Color color) {
+    Ball getHome(Color color) {
         return homeByColor.get().get(color);
     }
 }

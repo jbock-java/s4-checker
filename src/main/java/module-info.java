@@ -7,4 +7,5 @@ module uppufx {
     exports uppu;
     exports uppu.model;
     exports uppu.parse;
+    exports uppu.engine;
 }

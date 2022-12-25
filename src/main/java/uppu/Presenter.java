@@ -33,6 +33,7 @@ public class Presenter {
     public void run(List<ActionSequence> actions) {
         view.setOnActionSelected(action -> {
             view.stop();
+            view.setHomesVisible(false);
             current = actions.indexOf(action);
             view.setSelectedAction(action);
         });

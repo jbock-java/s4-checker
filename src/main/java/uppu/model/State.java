@@ -3,26 +3,28 @@ package uppu.model;
 import io.parmigiano.Permutation;
 import javafx.geometry.Point3D;
 import uppu.engine.Mover;
+import uppu.engine.Path;
 import uppu.model.Command.MoveCommand;
 import uppu.model.Command.WaitCommand;
+import uppu.util.Suppliers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public final class State {
 
-    private final List<Point3D> homePoints;
+    private static final Supplier<State> INSTANCE = Suppliers.memoize(State::new);
 
-    private State(List<Point3D> homePoints) {
-        this.homePoints = homePoints;
+    private State() {
     }
 
     public static State create() {
-        return new State(HomePoints.homePoints());
+        return INSTANCE.get();
     }
 
     public List<ActionSequence> getActions(List<CommandSequence> sequences) {
-        List<Color> state = Color.colors(homePoints.size());
+        List<Color> state = Color.getValues();
         List<ActionSequence> actionSequences = new ArrayList<>();
         for (CommandSequence sequence : sequences) {
             List<Action> actions = new ArrayList<>(sequence.commands().size());
@@ -61,10 +63,9 @@ public final class State {
         for (int i = 0; i < state.size(); i++) {
             Color color = state.get(i);
             int j = p.apply(i);
-            Point3D home = HomePoints.homePoint(color);
-            Point3D source = homePoints.get(i).subtract(home);
-            Point3D target = homePoints.get(j).subtract(home);
-            movers.add(new Mover(color, source, target));
+            Point3D detour1 = Color.get(i).homePoint().add(Color.get(j).homePoint()).multiply(0.7);
+            Point3D detour2 = Color.get(i).homePoint().add(Color.get(j).homePoint()).multiply(0.3);
+            movers.add(new Mover(color, new Path(Color.get(i), Color.get(j)), detour1, detour2));
             newColors[j] = color;
         }
         return new ActionWithState(new Action.MoveAction(movers), List.of(newColors));

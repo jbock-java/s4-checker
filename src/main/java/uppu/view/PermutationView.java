@@ -21,31 +21,31 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import uppu.engine.Mover;
+import uppu.engine.Path;
 import uppu.model.Action;
 import uppu.model.ActionSequence;
 import uppu.model.Color;
-import uppu.model.HomePoints;
 
 import java.net.URL;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+import static java.util.stream.Collectors.groupingBy;
 import static javafx.collections.FXCollections.observableArrayList;
-import static uppu.model.Spheres.spheres;
 
 public class PermutationView {
 
-    private static final Point3D CAMERA_POINT = new Point3D(-0.5f, 0, -25);
+    private static final Point3D CAMERA_POINT = new Point3D(0, -10, -25);
     private static final int WIDTH_CANVAS = 560;
     private static final int HEIGHT = 600;
     static final int WIDTH_PANEL = 500;
@@ -111,20 +111,16 @@ public class PermutationView {
         PerspectiveCamera camera = new PerspectiveCamera(true);
         camera.getTransforms().addAll(
                 new Translate(CAMERA_POINT.getX(), CAMERA_POINT.getY(), CAMERA_POINT.getZ()),
-                new Rotate(-30, new Point3D(1, 0, 0)),
-                new Rotate(9, new Point3D(0, 1, 0)));
+                new Rotate(-20, new Point3D(1, 0, 0)));
 
         // Build the Scene Graph
         Group root = new Group();
         root.getChildren().add(camera);
         for (Color color : Color.getValues()) {
-            Point3D home = HomePoints.homePoint(color);
-            Sphere homeSphere = spheres().getHome(color).sphere();
-            homeSphere.getTransforms().add(new Translate(home.getX(), home.getY(), home.getZ()));
-            root.getChildren().add(homeSphere);
-            Sphere sphere = spheres().get(color).sphere();
-            sphere.getTransforms().add(new Translate(home.getX(), home.getY(), home.getZ()));
-            root.getChildren().add(sphere);
+            color.homeSphere().setLocation(color.homePoint());
+            color.sphere().setLocation(color.homePoint());
+            root.getChildren().add(color.homeSphere().sphere());
+            root.getChildren().add(color.sphere().sphere());
         }
 
         // Use a SubScene
@@ -165,12 +161,27 @@ public class PermutationView {
         }
         AtomicInteger count = new AtomicInteger(4);
         if (action instanceof Action.MoveAction) {
-            for (Mover mover : ((Action.MoveAction) action).movers()) {
-                mover.ball().move(mover.source(), mover.target(), 3, () -> {
-                    if (count.decrementAndGet() == 0) {
-                        runNextAction(actions);
-                    }
-                });
+            Map<Path, List<Mover>> m = ((Action.MoveAction) action).movers().stream()
+                    .collect(groupingBy(Mover::normalize));
+            for (List<Mover> movers : m.values()) {
+                if (movers.size() == 1) {
+                    movers.get(0).ball().move(movers.get(0), 3, () -> {
+                        if (count.decrementAndGet() == 0) {
+                            runNextAction(actions);
+                        }
+                    });
+                } else {
+                    movers.get(0).ball().move(movers.get(0), movers.get(0).detour1(), 3, () -> {
+                        if (count.decrementAndGet() == 0) {
+                            runNextAction(actions);
+                        }
+                    });
+                    movers.get(1).ball().move(movers.get(1), movers.get(0).detour2(), 3, () -> {
+                        if (count.decrementAndGet() == 0) {
+                            runNextAction(actions);
+                        }
+                    });
+                } 
             }
         }
     }
@@ -199,20 +210,20 @@ public class PermutationView {
 
     public void setRunning(boolean running) {
         for (Color color : Color.getValues()) {
-            color.ball().setRunning(running);
+            color.sphere().setRunning(running);
         }
     }
 
     public void stop() {
         for (Color color : Color.getValues()) {
-            color.ball().stop();
+            color.sphere().stop();
         }
     }
 
     public void setHomesVisible(
             boolean visible) {
         for (Color color : Color.getValues()) {
-            spheres().getHome(color).sphere().setVisible(visible);
+            color.homeSphere().sphere().setVisible(visible);
         }
     }
 }
