@@ -24,22 +24,25 @@ public class Presenter {
     private boolean running = true;
     private int current = 0;
     private PauseTransition wait;
+    private List<ActionSequence> actions;
 
     Presenter(
             PermutationView view,
-            CommandLine commandLine) {
+            CommandLine commandLine,
+            List<ActionSequence> actions) {
         this.view = view;
         this.commandLine = commandLine;
+        this.actions = actions;
     }
 
-    public void run(List<ActionSequence> actions) {
+    public void run() {
         view.setOnActionSelected(action -> {
-            stop();
+            stop(true);
             current = actions.indexOf(action);
             view.setSelectedAction(action);
         });
         view.setOnAnimationFinished(() -> {
-            view.stop();
+            view.stop(true);
             view.setHomesVisible(true);
             wait = runDelayed(5000, () -> {
                 if (current < actions.size() - 1) {
@@ -54,9 +57,12 @@ public class Presenter {
             view.setRunning(running);
         });
         view.setOnEditButtonClicked(() -> {
-            stop();
+            stop(false);
             InputView inputView = InputView.create();
             inputView.setContent(actions);
+            inputView.setOnCancel(() -> {;
+                view.setRunning(true);
+            });
             inputView.setOnSave(lines -> {
                 S4Checker.readLines(lines).ifLeftOrElse(
                         error -> {
@@ -64,10 +70,11 @@ public class Presenter {
                             alert.showAndWait();
                         },
                         newCommands -> {
-                            List<ActionSequence> newActions = State.create().getActions(newCommands);
-                            view.setActions(newActions);
-//                            writeToFile(newActions);
-                            newActions.stream().findFirst().ifPresent(view::setSelectedAction);
+                            stop(true);
+                            actions = State.create().getActions(newCommands);
+                            view.setActions(actions);
+                            writeToFile(actions);
+                            actions.stream().findFirst().ifPresent(view::setSelectedAction);
                             view.setRunning(true);
                         });
                 inputView.close();
@@ -84,12 +91,12 @@ public class Presenter {
         });
     }
 
-    private void stop() {
+    private void stop(boolean shred) {
         if (wait != null) {
             wait.stop();
             wait = null;
         }
-        view.stop();
+        view.stop(shred);
         view.setHomesVisible(false);
     }
 

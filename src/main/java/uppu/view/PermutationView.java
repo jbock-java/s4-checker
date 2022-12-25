@@ -2,7 +2,6 @@ package uppu.view;
 
 import javafx.animation.PauseTransition;
 import javafx.beans.value.ChangeListener;
-import javafx.collections.ObservableList;
 import javafx.geometry.Point3D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -143,9 +142,11 @@ public class PermutationView {
         this.onFinished = onFinished;
     }
 
-    public void setSelectedAction(ActionSequence actions) {
-        selectInListView(actions);
-        runNextAction(new ArrayDeque<>(actions.actions()));
+    public void setSelectedAction(ActionSequence actionSequence) {
+        actions.getSelectionModel().selectedItemProperty().removeListener(changeListener);
+        actions.getSelectionModel().select(actionSequence);
+        actions.getSelectionModel().selectedItemProperty().addListener(changeListener);
+        runNextAction(new ArrayDeque<>(actionSequence.actions()));
     }
 
     private void runNextAction(Deque<Action> actions) {
@@ -174,7 +175,7 @@ public class PermutationView {
                 for (int i = 0; i < 3; i++) {
                     Point3D span = center.crossProduct(allMovers.get(i).path().arrow()).normalize();
                     if (allMovers.get(i).midPoint().add(span.multiply(0.1d)).distance(center) < allMovers.get(i).midPoint().distance(center)) {
-                        span = span.multiply(-1);                        
+                        span = span.multiply(-1);
                     }
                     allMovers.get(i).ball().move(allMovers.get(i), span, 3, () -> {
                         if (count.decrementAndGet() == 0) {
@@ -204,22 +205,14 @@ public class PermutationView {
                             runNextAction(actions);
                         }
                     });
-                } 
+                }
             }
         }
     }
 
-    private void selectInListView(ActionSequence actionSequence) {
-        actions.getSelectionModel().selectedItemProperty().removeListener(changeListener);
-        actions.getSelectionModel().select(actionSequence);
-        actions.getSelectionModel().selectedItemProperty().addListener(changeListener);
-    }
-
     public void setActions(List<ActionSequence> actions) {
         this.actions.getSelectionModel().selectedItemProperty().removeListener(changeListener);
-        ObservableList<ActionSequence> data = observableArrayList();
-        data.addAll(actions);
-        this.actions.setItems(data);
+        this.actions.setItems(observableArrayList(actions));
         this.actions.getSelectionModel().selectedItemProperty().addListener(changeListener);
     }
 
@@ -237,9 +230,9 @@ public class PermutationView {
         }
     }
 
-    public void stop() {
+    public void stop(boolean shred) {
         for (Color color : Color.getValues()) {
-            color.sphere().stop();
+            color.sphere().stop(shred);
         }
     }
 

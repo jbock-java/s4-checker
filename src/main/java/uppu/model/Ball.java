@@ -111,12 +111,14 @@ public class Ball {
         }
     }
 
-    public void stop() {
+    public void stop(boolean shred) {
         if (tl == null) {
             return;
         }
         tl.stop();
-        tl = null;
+        if (shred) {
+            tl = null;
+        }
     }
 
     public Sphere sphere() {

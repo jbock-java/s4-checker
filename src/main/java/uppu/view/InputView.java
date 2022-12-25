@@ -1,9 +1,11 @@
 package uppu.view;
 
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import uppu.model.ActionSequence;
@@ -20,6 +22,7 @@ public class InputView {
     private static final int HEIGHT_TEXTAREA = 600;
     private final Stage stage = new Stage(StageStyle.DECORATED);
     private final TextArea textArea = new TextArea();
+    private final GridPane buttonPanel = new GridPane();
     private final Button saveButton = new Button("Save");
     private final BorderPane borderPane = new BorderPane();
 
@@ -40,7 +43,9 @@ public class InputView {
 
     private Scene createScene() {
         borderPane.setCenter(textArea);
-        borderPane.setBottom(saveButton);
+        buttonPanel.setAlignment(Pos.BASELINE_CENTER);
+        buttonPanel.add(saveButton, 0, 0);
+        borderPane.setBottom(buttonPanel);
         URL style = Objects.requireNonNull(getClass().getResource("/uppu/css/style.css"));
         Scene scene = new Scene(borderPane, PermutationView.WIDTH_PANEL * 2, HEIGHT_TEXTAREA);
         scene.getStylesheets().add(style.toExternalForm());
@@ -60,6 +65,10 @@ public class InputView {
             String[] lines = text.split("\\R", -1);
             consumer.accept(Stream.of(lines).filter(line -> !line.isEmpty()).toList());
         });
+    }
+
+    public void setOnCancel(Runnable onCancel) {
+        stage.setOnCloseRequest(e -> onCancel.run());
     }
 
     public void close() {
