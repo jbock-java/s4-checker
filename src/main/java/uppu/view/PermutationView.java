@@ -171,12 +171,12 @@ public class PermutationView {
                         }
                     });
                 } else {
-                    movers.get(0).ball().move(movers.get(0), movers.get(0).detour(), 3, () -> {
+                    movers.get(0).ball().move(movers.get(0), movers.get(0).span(), 3, () -> {
                         if (count.decrementAndGet() == 0) {
                             runNextAction(actions);
                         }
                     });
-                    movers.get(1).ball().move(movers.get(1), movers.get(0).detour2(), 3, () -> {
+                    movers.get(1).ball().move(movers.get(1), movers.get(0).span2(), 3, () -> {
                         if (count.decrementAndGet() == 0) {
                             runNextAction(actions);
                         }

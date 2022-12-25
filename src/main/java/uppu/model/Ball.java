@@ -12,8 +12,6 @@ import javafx.scene.shape.Sphere;
 import javafx.util.Duration;
 import uppu.engine.Mover;
 
-import java.util.Optional;
-
 public class Ball {
 
     private final Sphere sphere;
@@ -55,23 +53,14 @@ public class Ball {
             Mover mover,
             int seconds,
             Runnable onSuccess) {
-        move(mover, Optional.of(mover.detour()), seconds, onSuccess);
+        move(mover, mover.span(), seconds, onSuccess);
     }
 
     public void move(
             Mover mover,
-            Point3D detour,
+            Point3D span,
             int seconds,
             Runnable onSuccess) {
-        move(mover, Optional.of(detour), seconds, onSuccess);
-    }
-
-    private void move(
-            Mover mover,
-            Optional<Point3D> detour,
-            int seconds,
-            Runnable onSuccess) {
-
         if (tl != null) {
             tl.stop();
             tl = null;
@@ -90,33 +79,20 @@ public class Ball {
         DoubleProperty y = sphere.translateYProperty();
         DoubleProperty z = sphere.translateZProperty();
 
-        tl = detour.map(d -> {
-                    Point3D b = target.subtract(source);
-                    Point3D span = d.subtract(source.add(target).multiply(0.5d));
-                    int segments = 64;
-                    KeyFrame[] frames = new KeyFrame[segments + 1];
-                    float frac = 1.0f / segments;
-                    Point3D inc = b.multiply(frac);
-                    for (int i = 0; i <= segments; i++) {
-                        Point3D p = source.add(inc.multiply(i));
-                        Point3D dd = p.add(span.multiply(Math.sin(Math.PI * frac * i)));
-                        frames[i] = new KeyFrame(Duration.seconds(seconds * frac * i),
-                                new KeyValue(x, dd.getX(), Interpolator.LINEAR),
-                                new KeyValue(y, dd.getY(), Interpolator.LINEAR),
-                                new KeyValue(z, dd.getZ(), Interpolator.LINEAR));
-                    }
-                    return new Timeline(frames);
-                })
-                .orElseGet(() -> new Timeline(
-                        new KeyFrame(Duration.ZERO,
-                                new KeyValue(x, source.getX()),
-                                new KeyValue(y, source.getY()),
-                                new KeyValue(z, source.getZ())),
-                        new KeyFrame(Duration.seconds(seconds),
-                                new KeyValue(x, target.getX(), Interpolator.LINEAR),
-                                new KeyValue(y, target.getY(), Interpolator.LINEAR),
-                                new KeyValue(z, target.getZ(), Interpolator.LINEAR))));
+        int segments = 64;
+        KeyFrame[] frames = new KeyFrame[segments + 1];
+        float frac = 1.0f / segments;
+        Point3D inc = target.subtract(source).multiply(frac);
+        for (int i = 0; i <= segments; i++) {
+            Point3D p = source.add(inc.multiply(i));
+            Point3D dd = p.add(span.multiply(Math.sin(Math.PI * frac * i)));
+            frames[i] = new KeyFrame(Duration.seconds(seconds * frac * i),
+                    new KeyValue(x, dd.getX(), Interpolator.LINEAR),
+                    new KeyValue(y, dd.getY(), Interpolator.LINEAR),
+                    new KeyValue(z, dd.getZ(), Interpolator.LINEAR));
+        }
 
+        tl = new Timeline(frames);
         tl.setCycleCount(1);
         tl.play();
         tl.setOnFinished(ev -> {
