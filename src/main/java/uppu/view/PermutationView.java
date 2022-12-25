@@ -1,6 +1,5 @@
 package uppu.view;
 
-import javafx.animation.PauseTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Point3D;
 import javafx.geometry.Pos;
@@ -23,7 +22,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import uppu.engine.Mover;
 import uppu.engine.Path;
 import uppu.model.Action;
@@ -44,7 +42,7 @@ import static javafx.collections.FXCollections.observableArrayList;
 
 public class PermutationView {
 
-    private static final Point3D CAMERA_POINT = new Point3D(0, -10, -25);
+    private static final Point3D CAMERA_POINT = new Point3D(0, -2, -5);
     private static final int WIDTH_CANVAS = 860;
     private static final int HEIGHT = 900;
     static final int WIDTH_PANEL = 500;
@@ -110,7 +108,7 @@ public class PermutationView {
         PerspectiveCamera camera = new PerspectiveCamera(true);
         camera.getTransforms().addAll(
                 new Translate(CAMERA_POINT.getX(), CAMERA_POINT.getY(), CAMERA_POINT.getZ()),
-                new Rotate(-20, new Point3D(1, 0, 0)));
+                new Rotate(-20.6f, new Point3D(1, 0, 0)));
 
         // Build the Scene Graph
         Group root = new Group();
@@ -156,9 +154,7 @@ public class PermutationView {
             return;
         }
         if (action instanceof Action.WaitAction) {
-            PauseTransition wait = new PauseTransition(Duration.millis(80));
-            wait.setOnFinished(e -> runNextAction(actions));
-            wait.play();
+            runNextAction(actions);
         }
         if (action instanceof Action.MoveAction) {
             List<Mover> zero = ((Action.MoveAction) action).zeroMovers();

@@ -3,6 +3,7 @@ package uppu;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import uppu.model.ActionSequence;
 import uppu.model.State;
@@ -66,7 +67,7 @@ public class Presenter {
             inputView.setOnSave(lines -> {
                 S4Checker.readLines(lines).ifLeftOrElse(
                         error -> {
-                            Alert alert = new Alert(Alert.AlertType.ERROR, error, ButtonType.OK);
+                            Alert alert = new Alert(AlertType.ERROR, error, ButtonType.OK);
                             alert.showAndWait();
                         },
                         newCommands -> {
@@ -107,7 +108,7 @@ public class Presenter {
             Files.write(p, lines, StandardOpenOption.TRUNCATE_EXISTING);
             Files.writeString(p, System.lineSeparator(), StandardOpenOption.APPEND);
         } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, e.toString(), ButtonType.OK);
+            Alert alert = new Alert(AlertType.ERROR, e.toString(), ButtonType.OK);
             alert.showAndWait();
         }
     }

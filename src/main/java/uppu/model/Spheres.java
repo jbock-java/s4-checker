@@ -11,14 +11,14 @@ import static uppu.util.Suppliers.memoize;
 
 final class Spheres {
 
-    private final Ball redSphere = Ball.create(Color.RED, 1.2f, DrawMode.FILL).build();
-    private final Ball greenSphere = Ball.create(Color.GREEN, 1.2f, DrawMode.FILL).build();
-    private final Ball blueSphere = Ball.create(Color.BLUE, 1.2f, DrawMode.FILL).build();
-    private final Ball silverSphere = Ball.create(Color.SILVER, 1.2f, DrawMode.FILL).build();
-    private final Ball redHome = Ball.create(Color.RED, 2f, DrawMode.LINE).build(32);
-    private final Ball greenHome = Ball.create(Color.GREEN, 2f, DrawMode.LINE).build(32);
-    private final Ball blueHome = Ball.create(Color.BLUE, 2f, DrawMode.LINE).build(32);
-    private final Ball silverHome = Ball.create(Color.SILVER, 2f, DrawMode.LINE).build(32);
+    private final Ball redSphere = Ball.create(Color.RED, 0.24f, DrawMode.FILL).build();
+    private final Ball greenSphere = Ball.create(Color.GREEN, 0.24f, DrawMode.FILL).build();
+    private final Ball blueSphere = Ball.create(Color.BLUE, 0.24f, DrawMode.FILL).build();
+    private final Ball silverSphere = Ball.create(Color.SILVER, 0.24f, DrawMode.FILL).build();
+    private final Ball redHome = Ball.create(Color.RED, 0.4f, DrawMode.LINE).build(32);
+    private final Ball greenHome = Ball.create(Color.GREEN, 0.4f, DrawMode.LINE).build(32);
+    private final Ball blueHome = Ball.create(Color.BLUE, 0.4f, DrawMode.LINE).build(32);
+    private final Ball silverHome = Ball.create(Color.SILVER, 0.4f, DrawMode.LINE).build(32);
 
     private static final Supplier<Spheres> INSTANCE = memoize(Spheres::new);
 

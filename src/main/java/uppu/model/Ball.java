@@ -85,7 +85,8 @@ public class Ball {
         Point3D inc = target.subtract(source).multiply(frac);
         for (int i = 0; i <= segments; i++) {
             Point3D p = source.add(inc.multiply(i));
-            Point3D dd = p.add(span.multiply(Math.sin(Math.PI * frac * i)));
+            double factor = Math.sin(Math.PI * (1f / 6f + frac * i * 2f / 3f)) - 0.5f;
+            Point3D dd = p.add(span.multiply(factor * HomePoints.FACE_RADIUS));
             frames[i] = new KeyFrame(Duration.seconds(seconds * frac * i),
                     new KeyValue(x, dd.getX(), Interpolator.LINEAR),
                     new KeyValue(y, dd.getY(), Interpolator.LINEAR),
