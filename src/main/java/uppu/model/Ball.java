@@ -47,7 +47,6 @@ public class Ball {
         }
     }
 
-
     static Builder create(Color color, double radius, DrawMode drawMode) {
         return new Builder(color, radius, drawMode);
     }
@@ -56,7 +55,7 @@ public class Ball {
             Mover mover,
             int seconds,
             Runnable onSuccess) {
-        move(mover, Optional.empty(), seconds, onSuccess);
+        move(mover, Optional.of(mover.detour()), seconds, onSuccess);
     }
 
     public void move(
@@ -92,19 +91,21 @@ public class Ball {
         DoubleProperty z = sphere.translateZProperty();
 
         tl = detour.map(d -> {
-                    return new Timeline(
-                            new KeyFrame(Duration.ZERO,
-                                    new KeyValue(x, source.getX()),
-                                    new KeyValue(y, source.getY()),
-                                    new KeyValue(z, source.getZ())),
-                            new KeyFrame(Duration.seconds(seconds * 0.5f),
-                                    new KeyValue(x, d.getX(), Interpolator.LINEAR),
-                                    new KeyValue(y, d.getY(), Interpolator.LINEAR),
-                                    new KeyValue(z, d.getZ(), Interpolator.LINEAR)),
-                            new KeyFrame(Duration.seconds(seconds),
-                                    new KeyValue(x, target.getX(), Interpolator.LINEAR),
-                                    new KeyValue(y, target.getY(), Interpolator.LINEAR),
-                                    new KeyValue(z, target.getZ(), Interpolator.LINEAR)));
+                    Point3D b = target.subtract(source);
+                    Point3D span = d.subtract(source.add(target).multiply(0.5d));
+                    int segments = 64;
+                    KeyFrame[] frames = new KeyFrame[segments + 1];
+                    float frac = 1.0f / segments;
+                    Point3D inc = b.multiply(frac);
+                    for (int i = 0; i <= segments; i++) {
+                        Point3D p = source.add(inc.multiply(i));
+                        Point3D dd = p.add(span.multiply(Math.sin(Math.PI * frac * i)));
+                        frames[i] = new KeyFrame(Duration.seconds(seconds * frac * i),
+                                new KeyValue(x, dd.getX(), Interpolator.LINEAR),
+                                new KeyValue(y, dd.getY(), Interpolator.LINEAR),
+                                new KeyValue(z, dd.getZ(), Interpolator.LINEAR));
+                    }
+                    return new Timeline(frames);
                 })
                 .orElseGet(() -> new Timeline(
                         new KeyFrame(Duration.ZERO,

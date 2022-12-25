@@ -46,8 +46,8 @@ import static javafx.collections.FXCollections.observableArrayList;
 public class PermutationView {
 
     private static final Point3D CAMERA_POINT = new Point3D(0, -10, -25);
-    private static final int WIDTH_CANVAS = 560;
-    private static final int HEIGHT = 600;
+    private static final int WIDTH_CANVAS = 860;
+    private static final int HEIGHT = 900;
     static final int WIDTH_PANEL = 500;
     private static final int HEIGHT_SLIDER = 12;
     private static final int INITIAL_SPEED = 16;
@@ -162,7 +162,7 @@ public class PermutationView {
         AtomicInteger count = new AtomicInteger(4);
         if (action instanceof Action.MoveAction) {
             Map<Path, List<Mover>> m = ((Action.MoveAction) action).movers().stream()
-                    .collect(groupingBy(Mover::normalize));
+                    .collect(groupingBy(mover -> mover.path().normalize()));
             for (List<Mover> movers : m.values()) {
                 if (movers.size() == 1) {
                     movers.get(0).ball().move(movers.get(0), 3, () -> {
@@ -171,7 +171,7 @@ public class PermutationView {
                         }
                     });
                 } else {
-                    movers.get(0).ball().move(movers.get(0), movers.get(0).detour1(), 3, () -> {
+                    movers.get(0).ball().move(movers.get(0), movers.get(0).detour(), 3, () -> {
                         if (count.decrementAndGet() == 0) {
                             runNextAction(actions);
                         }

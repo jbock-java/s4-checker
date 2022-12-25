@@ -1,5 +1,6 @@
 package uppu;
 
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -22,6 +23,7 @@ public class Presenter {
     private final CommandLine commandLine;
     private boolean running = true;
     private int current = 0;
+    private PauseTransition wait;
 
     Presenter(
             PermutationView view,
@@ -32,6 +34,9 @@ public class Presenter {
 
     public void run(List<ActionSequence> actions) {
         view.setOnActionSelected(action -> {
+            if (wait != null) {
+                wait.stop();
+            }
             view.stop();
             view.setHomesVisible(false);
             current = actions.indexOf(action);
@@ -40,7 +45,7 @@ public class Presenter {
         view.setOnAnimationFinished(() -> {
             view.stop();
             view.setHomesVisible(true);
-            runDelayed(5000, () -> {
+            wait = runDelayed(5000, () -> {
                 if (current < actions.size() - 1) {
                     current++;
                     view.setHomesVisible(false);

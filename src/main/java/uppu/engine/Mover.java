@@ -7,15 +7,10 @@ import uppu.model.Color;
 public record Mover(
         Color color, // which ball to move
         Path path,
-        Point3D detour1, // a detour will be taken if necessary, to avoid collision
-        Point3D detour2) { // a detour will be taken if necessary, to avoid collision
+        Point3D detour) { // a detour will be taken if necessary, to avoid collision
 
     public Ball ball() {
         return color.sphere();
-    }
-
-    public Path normalize() {
-        return path.normalize();
     }
 
     public Color source() {
@@ -26,7 +21,11 @@ public record Mover(
         return path.destination();
     }
 
-    public Point3D noDetour() {
-        return source().homePoint().add(destination().homePoint()).multiply(0.5d);
+    public Point3D detour2() {
+        Point3D destination = destination().homePoint();
+        Point3D source = source().homePoint();
+        Point3D b = destination.subtract(source).multiply(0.5d);
+        Point3D span = detour.subtract(source.add(destination).multiply(0.5d));
+        return source.add(b).subtract(span);
     }
 }
