@@ -34,11 +34,7 @@ public class Presenter {
 
     public void run(List<ActionSequence> actions) {
         view.setOnActionSelected(action -> {
-            if (wait != null) {
-                wait.stop();
-            }
-            view.stop();
-            view.setHomesVisible(false);
+            stop();
             current = actions.indexOf(action);
             view.setSelectedAction(action);
         });
@@ -58,7 +54,7 @@ public class Presenter {
             view.setRunning(running);
         });
         view.setOnEditButtonClicked(() -> {
-            setRunning(false);
+            stop();
             InputView inputView = InputView.create();
             inputView.setContent(actions);
             inputView.setOnSave(lines -> {
@@ -70,16 +66,16 @@ public class Presenter {
                         newCommands -> {
                             List<ActionSequence> newActions = State.create().getActions(newCommands);
                             view.setActions(newActions);
-                            writeToFile(newActions);
+//                            writeToFile(newActions);
                             newActions.stream().findFirst().ifPresent(view::setSelectedAction);
-                            setRunning(true);
+                            view.setRunning(true);
                         });
                 inputView.close();
             });
         });
         runDelayed(2000, () -> {
             view.setHomesVisible(true);
-            setRunning(true);
+            view.setRunning(true);
             Platform.runLater(() -> {
                 view.setHomesVisible(false);
                 view.setActions(actions);
@@ -88,8 +84,13 @@ public class Presenter {
         });
     }
 
-    private void setRunning(boolean running) {
-        view.setRunning(running);
+    private void stop() {
+        if (wait != null) {
+            wait.stop();
+            wait = null;
+        }
+        view.stop();
+        view.setHomesVisible(false);
     }
 
     private void writeToFile(List<ActionSequence> newActions) {

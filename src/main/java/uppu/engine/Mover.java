@@ -6,8 +6,7 @@ import uppu.model.Color;
 
 public record Mover(
         Color color, // which ball to move
-        Path path,
-        Point3D span) { // a detour will be taken if necessary, to avoid collision
+        Path path) {
 
     public Ball ball() {
         return color.sphere();
@@ -21,7 +20,7 @@ public record Mover(
         return path.destination();
     }
 
-    public Point3D span2() {
-        return span.multiply(-1);
+    public Point3D midPoint() {
+        return path.midPoint();
     }
 }

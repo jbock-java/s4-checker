@@ -63,12 +63,8 @@ public final class State {
         for (int i = 0; i < state.size(); i++) {
             Color color = state.get(i);
             int j = p.apply(i);
-            Point3D source = Color.get(i).homePoint();
-            Point3D destination = Color.get(j).homePoint();
-            Point3D detour = source.add(destination).multiply(0.65);
-            Point3D span = detour.subtract(source.add(destination).multiply(0.5d)).normalize();
-            movers.add(new Mover(color, new Path(Color.get(i), Color.get(j)), span));
             newColors[j] = color;
+            movers.add(new Mover(color, new Path(Color.get(i), Color.get(j))));
         }
         return new ActionWithState(new Action.MoveAction(movers), List.of(newColors));
     }

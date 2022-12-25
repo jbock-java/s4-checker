@@ -159,9 +159,32 @@ public class PermutationView {
             wait.setOnFinished(e -> runNextAction(actions));
             wait.play();
         }
-        AtomicInteger count = new AtomicInteger(4);
         if (action instanceof Action.MoveAction) {
-            Map<Path, List<Mover>> m = ((Action.MoveAction) action).movers().stream()
+            List<Mover> zero = ((Action.MoveAction) action).zeroMovers();
+            for (Mover m : zero) {
+                m.ball().setLocation(m.path().destination().homePoint());
+            }
+            List<Mover> allMovers = ((Action.MoveAction) action).nonZeroMovers();
+            AtomicInteger count = new AtomicInteger(allMovers.size());
+            if (allMovers.size() == 3) {
+                Mover m0 = allMovers.get(0);
+                Mover m1 = allMovers.get(1);
+                Mover m2 = allMovers.get(2);
+                Point3D center = m0.midPoint().add(m1.midPoint()).add(m2.midPoint()).multiply(1f / 3f);
+                for (int i = 0; i < 3; i++) {
+                    Point3D span = center.crossProduct(allMovers.get(i).path().arrow()).normalize();
+                    if (allMovers.get(i).midPoint().add(span.multiply(0.1d)).distance(center) < allMovers.get(i).midPoint().distance(center)) {
+                        span = span.multiply(-1);                        
+                    }
+                    allMovers.get(i).ball().move(allMovers.get(i), span, 3, () -> {
+                        if (count.decrementAndGet() == 0) {
+                            runNextAction(actions);
+                        }
+                    });
+                }
+                return;
+            }
+            Map<Path, List<Mover>> m = allMovers.stream()
                     .collect(groupingBy(mover -> mover.path().normalize()));
             for (List<Mover> movers : m.values()) {
                 if (movers.size() == 1) {
@@ -171,12 +194,12 @@ public class PermutationView {
                         }
                     });
                 } else {
-                    movers.get(0).ball().move(movers.get(0), movers.get(0).span(), 3, () -> {
+                    movers.get(0).ball().move(movers.get(0), movers.get(0).midPoint().normalize(), 3, () -> {
                         if (count.decrementAndGet() == 0) {
                             runNextAction(actions);
                         }
                     });
-                    movers.get(1).ball().move(movers.get(1), movers.get(0).span2(), 3, () -> {
+                    movers.get(1).ball().move(movers.get(1), movers.get(0).midPoint().normalize().multiply(-1), 3, () -> {
                         if (count.decrementAndGet() == 0) {
                             runNextAction(actions);
                         }
@@ -193,9 +216,9 @@ public class PermutationView {
     }
 
     public void setActions(List<ActionSequence> actions) {
+        this.actions.getSelectionModel().selectedItemProperty().removeListener(changeListener);
         ObservableList<ActionSequence> data = observableArrayList();
         data.addAll(actions);
-        this.actions.getSelectionModel().selectedItemProperty().removeListener(changeListener);
         this.actions.setItems(data);
         this.actions.getSelectionModel().selectedItemProperty().addListener(changeListener);
     }

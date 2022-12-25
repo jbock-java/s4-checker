@@ -53,7 +53,7 @@ public class Ball {
             Mover mover,
             int seconds,
             Runnable onSuccess) {
-        move(mover, mover.span(), seconds, onSuccess);
+        move(mover, mover.midPoint().normalize(), seconds, onSuccess);
     }
 
     public void move(
