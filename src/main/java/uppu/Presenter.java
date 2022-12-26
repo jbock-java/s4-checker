@@ -45,12 +45,14 @@ public class Presenter {
         view.setOnAnimationFinished(() -> {
             view.stop(true);
             view.setHomesVisible(true);
-            wait = runDelayed(5000, () -> {
-                if (current < actions.size() - 1) {
-                    current++;
-                    view.setHomesVisible(false);
-                    view.setSelectedAction(actions.get(current));
-                }
+            wait = runDelayed(4000, () -> {
+                view.setHomesVisible(false);
+                wait = runDelayed(800, () -> {
+                    if (current < actions.size() - 1) {
+                        current++;
+                        view.setSelectedAction(actions.get(current));
+                    }
+                });
             });
         });
         view.setOnPauseButtonClicked(() -> {
@@ -81,11 +83,10 @@ public class Presenter {
                 inputView.close();
             });
         });
+        runDelayed(0, () -> view.setHomesVisible(false));
         runDelayed(2000, () -> {
-            view.setHomesVisible(true);
             view.setRunning(true);
             Platform.runLater(() -> {
-                view.setHomesVisible(false);
                 view.setActions(actions);
                 actions.stream().findFirst().ifPresent(view::setSelectedAction);
             });

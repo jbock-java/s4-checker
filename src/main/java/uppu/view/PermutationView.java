@@ -1,5 +1,6 @@
 package uppu.view;
 
+import javafx.animation.PauseTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Point3D;
 import javafx.geometry.Pos;
@@ -22,6 +23,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import uppu.engine.Mover;
 import uppu.engine.Path;
 import uppu.model.Action;
@@ -66,6 +68,8 @@ public class PermutationView {
     private final ChangeListener<ActionSequence> changeListener = (observable, oldValue, newValue) -> onSelected.accept(newValue);
     private Runnable onFinished = () -> {
     };
+
+    private PauseTransition wait;
 
     private PermutationView(Stage stage) {
         this.stage = stage;
@@ -154,7 +158,12 @@ public class PermutationView {
             return;
         }
         if (action instanceof Action.WaitAction) {
-            runNextAction(actions);
+            if (wait != null) {
+                wait.stop();
+            }
+            wait = new PauseTransition(Duration.millis(80));
+            wait.setOnFinished(e -> runNextAction(actions));
+            wait.play();
         }
         if (action instanceof Action.MoveAction) {
             List<Mover> zero = ((Action.MoveAction) action).zeroMovers();
@@ -169,11 +178,7 @@ public class PermutationView {
                 Mover m2 = allMovers.get(2);
                 Point3D center = m0.midPoint().add(m1.midPoint()).add(m2.midPoint()).multiply(1f / 3f);
                 for (int i = 0; i < 3; i++) {
-                    Point3D span = center.crossProduct(allMovers.get(i).path().arrow()).normalize();
-                    if (allMovers.get(i).midPoint().add(span.multiply(0.1d)).distance(center) < allMovers.get(i).midPoint().distance(center)) {
-                        span = span.multiply(-1);
-                    }
-                    allMovers.get(i).ball().move(allMovers.get(i), span, 3, () -> {
+                    allMovers.get(i).ball().moveCircle(allMovers.get(i), center, 3, () -> {
                         if (count.decrementAndGet() == 0) {
                             runNextAction(actions);
                         }
@@ -221,12 +226,20 @@ public class PermutationView {
     }
 
     public void setRunning(boolean running) {
+        if (!running && wait != null) {
+            wait.stop();
+            wait = null;
+        }
         for (Color color : Color.getValues()) {
             color.sphere().setRunning(running);
         }
     }
 
     public void stop(boolean shred) {
+        if (wait != null) {
+            wait.stop();
+            wait = null;
+        }
         for (Color color : Color.getValues()) {
             color.sphere().stop(shred);
         }
