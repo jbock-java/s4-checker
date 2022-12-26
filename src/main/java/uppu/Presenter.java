@@ -46,8 +46,10 @@ public class Presenter {
             view.stop(true);
             view.setHomesVisible(true);
             wait = runDelayed(800, () -> {
+                wait = null;
                 view.setHomesVisible(false);
                 wait = runDelayed(2000, () -> {
+                    wait = null;
                     if (current < actions.size() - 1) {
                         current++;
                         view.setSelectedAction(actions.get(current));
@@ -83,8 +85,12 @@ public class Presenter {
                 inputView.close();
             });
         });
-        runDelayed(0, () -> view.setHomesVisible(false));
-        runDelayed(2000, () -> {
+        wait = runDelayed(0, () -> {
+            wait = null;
+            view.setHomesVisible(false);
+        });
+        wait = runDelayed(2000, () -> {
+            wait = null;
             setRunning(true);
             Platform.runLater(() -> {
                 view.setActions(actions);

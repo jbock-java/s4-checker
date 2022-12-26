@@ -161,8 +161,11 @@ public class PermutationView {
             if (wait != null) {
                 wait.stop();
             }
-            wait = new PauseTransition(Duration.millis(80));
-            wait.setOnFinished(e -> runNextAction(actions));
+            wait = new PauseTransition(Duration.millis(160));
+            wait.setOnFinished(e -> {
+                wait = null;
+                runNextAction(actions);
+            });
             wait.play();
         }
         if (action instanceof Action.MoveAction) {

@@ -90,6 +90,7 @@ public class Ball {
         tl.setCycleCount(1);
         tl.play();
         tl.setOnFinished(ev -> {
+            tl = null;
             onSuccess.run();
         });
     }
@@ -122,6 +123,7 @@ public class Ball {
         tl.setCycleCount(1);
         tl.play();
         tl.setOnFinished(ev -> {
+            tl = null;
             onSuccess.run();
         });
     }
@@ -170,6 +172,7 @@ public class Ball {
         tl.setCycleCount(1);
         tl.play();
         tl.setOnFinished(ev -> {
+            tl = null;
             onSuccess.run();
         });
     }
