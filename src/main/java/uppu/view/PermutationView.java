@@ -29,6 +29,7 @@ import uppu.engine.Path;
 import uppu.model.Action;
 import uppu.model.ActionSequence;
 import uppu.model.Color;
+import uppu.model.Rotation;
 
 import java.net.URL;
 import java.util.ArrayDeque;
@@ -185,17 +186,35 @@ public class PermutationView {
                 Mover m1 = allMovers.get(1);
                 Mover m2 = allMovers.get(2);
                 Point3D center = m0.midPoint().add(m1.midPoint()).add(m2.midPoint()).multiply(1f / 3f);
+                Rotation rotation = Rotation.fromAxis(center);
                 for (int i = 0; i < 3; i++) {
-                    allMovers.get(i).ball().moveCircle(allMovers.get(i), center, 3, () -> {
+                    allMovers.get(i).ball().moveCircle(allMovers.get(i), rotation, 3, () -> {
                         if (count.decrementAndGet() == 0) {
                             runNextAction(actions);
                         }
-                    });
+                    }, Math.PI * (2f / 3f), true);
                 }
                 return;
             }
             Map<Path, List<Mover>> m = allMovers.stream()
                     .collect(groupingBy(mover -> mover.path().normalize()));
+            if (m.size() == 2 && m.values().stream().allMatch(movers -> movers.size() == 2)) {
+                List<List<Mover>> values = List.copyOf(m.values());
+                List<Mover> group0 = values.get(0);
+                List<Mover> group1 = values.get(1);
+                Mover a = group0.get(0);
+                Mover b = group1.get(0);
+                Point3D axis = a.midPoint().subtract(b.midPoint());
+                Rotation rotation = Rotation.fromAxis(axis);
+                for (Mover mover : allMovers) {
+                    mover.ball().moveCircle(mover, rotation, 3, () -> {
+                        if (count.decrementAndGet() == 0) {
+                            runNextAction(actions);
+                        }
+                    }, Math.PI, false);
+                }
+                return;
+            }
             for (List<Mover> movers : m.values()) {
                 if (movers.size() == 1) {
                     movers.get(0).ball().moveSimple(movers.get(0), 3, () -> {

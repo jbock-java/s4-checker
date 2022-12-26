@@ -130,9 +130,11 @@ public class Ball {
 
     public void moveCircle(
             Mover mover,
-            Point3D center,
+            Rotation rotation,
             int seconds,
-            Runnable onSuccess) {
+            Runnable onSuccess, 
+            double angle,
+            boolean detectOrientation) {
 
         if (mover.source().equals(mover.destination())) {
             setLocation(mover.destination().homePoint());
@@ -140,7 +142,7 @@ public class Ball {
             return;
         }
 
-        tl = new Timeline(getRotationTimeline(mover, center, Math.PI * (2f / 3f), seconds));
+        tl = new Timeline(getRotationTimeline(mover, rotation, angle, seconds, detectOrientation));
         tl.setCycleCount(1);
         tl.play();
         tl.setOnFinished(ev -> {
@@ -151,9 +153,10 @@ public class Ball {
 
     private KeyFrame[] getRotationTimeline(
             Mover mover,
-            Point3D axis,
+            Rotation rotation,
             double angle,
-            int seconds) {
+            int seconds,
+            boolean detectOrientation) {
         Point3D source = mover.source().homePoint();
         Point3D dest = mover.destination().homePoint();
         int segments = 64;
@@ -163,13 +166,11 @@ public class Ball {
         DoubleProperty y = sphere.translateYProperty();
         DoubleProperty z = sphere.translateZProperty();
         KeyFrame[] frames = new KeyFrame[segments + 1];
-        Rotation rotation = Rotation.fromAxis(axis);
-        Point3D v = source.subtract(axis);
-        if (axis.add(rotation.apply(v, frac)).distance(dest) > axis.add(v).distance(dest)) {
+        if (detectOrientation && rotation.apply(source, frac).distance(dest) > source.distance(dest)) {
             frac = -frac;
         }
         for (int i = 0; i <= segments; i++) {
-            Point3D dd = axis.add(rotation.apply(v, frac * i));
+            Point3D dd = rotation.apply(source, frac * i);
             frames[i] = new KeyFrame(Duration.seconds(seconds * factor * i),
                     new KeyValue(x, dd.getX(), Interpolator.LINEAR),
                     new KeyValue(y, dd.getY(), Interpolator.LINEAR),
