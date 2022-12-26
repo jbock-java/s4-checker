@@ -1,7 +1,6 @@
 plugins {
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.9'
-    id 'org.beryx.jlink' version '2.12.0'
 }
 
 repositories {
@@ -10,7 +9,7 @@ repositories {
 
 javafx {
     version = "19"
-    modules = ['javafx.controls', 'javafx.fxml']
+    modules = ['javafx.controls']
 }
 
 dependencies {
@@ -22,14 +21,7 @@ dependencies {
     testImplementation('org.junit.jupiter:junit-jupiter:5.9.1')
 }
 
-mainClassName = "$moduleName/uppu.S4Checker"
-
-jlink {
-    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
-    launcher {
-        name = 'uppu'
-    }
-}
+mainClassName = "uppu.S4Checker"
 
 configurations {
     testCompile
