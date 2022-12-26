@@ -133,48 +133,49 @@ public class Ball {
             Point3D center,
             int seconds,
             Runnable onSuccess) {
-        if (tl != null) {
-            tl.stop();
-            tl = null;
-        }
-
-        Point3D source = mover.source().homePoint();
-        Point3D target = mover.destination().homePoint();
 
         if (mover.source().equals(mover.destination())) {
-            setLocation(target);
+            setLocation(mover.destination().homePoint());
             onSuccess.run();
             return;
         }
 
-        DoubleProperty x = sphere.translateXProperty();
-        DoubleProperty y = sphere.translateYProperty();
-        DoubleProperty z = sphere.translateZProperty();
-
-        int segments = 64;
-        float factor = 1f / segments;
-        KeyFrame[] frames = new KeyFrame[segments + 1];
-        double frac = Math.PI * (2f / 3f) / segments;
-        Point3D v = source.subtract(center);
-        Rotation rotation = Rotation.fromAxis(center);
-        if (center.add(rotation.apply(v, frac)).distance(target) > center.add(v).distance(target)) {
-            frac = -frac;
-        }
-        for (int i = 0; i <= segments; i++) {
-            Point3D dd = center.add(rotation.apply(v, frac * i));
-            frames[i] = new KeyFrame(Duration.seconds(seconds * factor * i),
-                    new KeyValue(x, dd.getX(), Interpolator.LINEAR),
-                    new KeyValue(y, dd.getY(), Interpolator.LINEAR),
-                    new KeyValue(z, dd.getZ(), Interpolator.LINEAR));
-        }
-
-        tl = new Timeline(frames);
+        tl = new Timeline(getRotationTimeline(mover, center, Math.PI * (2f / 3f), seconds));
         tl.setCycleCount(1);
         tl.play();
         tl.setOnFinished(ev -> {
             tl = null;
             onSuccess.run();
         });
+    }
+
+    private KeyFrame[] getRotationTimeline(
+            Mover mover,
+            Point3D axis,
+            double angle,
+            int seconds) {
+        Point3D source = mover.source().homePoint();
+        Point3D dest = mover.destination().homePoint();
+        int segments = 64;
+        double frac = angle / segments;
+        float factor = 1f / segments;
+        DoubleProperty x = sphere.translateXProperty();
+        DoubleProperty y = sphere.translateYProperty();
+        DoubleProperty z = sphere.translateZProperty();
+        KeyFrame[] frames = new KeyFrame[segments + 1];
+        Rotation rotation = Rotation.fromAxis(axis);
+        Point3D v = source.subtract(axis);
+        if (axis.add(rotation.apply(v, frac)).distance(dest) > axis.add(v).distance(dest)) {
+            frac = -frac;
+        }
+        for (int i = 0; i <= segments; i++) {
+            Point3D dd = axis.add(rotation.apply(v, frac * i));
+            frames[i] = new KeyFrame(Duration.seconds(seconds * factor * i),
+                    new KeyValue(x, dd.getX(), Interpolator.LINEAR),
+                    new KeyValue(y, dd.getY(), Interpolator.LINEAR),
+                    new KeyValue(z, dd.getZ(), Interpolator.LINEAR));
+        }
+        return frames;
     }
 
     public void setRunning(boolean running) {

@@ -45,10 +45,10 @@ public class Presenter {
         view.setOnAnimationFinished(() -> {
             view.stop(true);
             view.setHomesVisible(true);
-            wait = runDelayed(800, () -> {
+            wait = runDelayed(1200, () -> {
                 wait = null;
                 view.setHomesVisible(false);
-                wait = runDelayed(2000, () -> {
+                wait = runDelayed(1200, () -> {
                     wait = null;
                     if (current < actions.size() - 1) {
                         current++;

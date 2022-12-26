@@ -154,14 +154,19 @@ public class PermutationView {
     private void runNextAction(Deque<Action> actions) {
         Action action = actions.pollFirst();
         if (action == null) {
-            onFinished.run();
+            wait = new PauseTransition(Duration.millis(400));
+            wait.setOnFinished(e -> {
+                wait = null;
+                onFinished.run();
+            });
+            wait.play();
             return;
         }
         if (action instanceof Action.WaitAction) {
             if (wait != null) {
                 wait.stop();
             }
-            wait = new PauseTransition(Duration.millis(160));
+            wait = new PauseTransition(Duration.millis(320));
             wait.setOnFinished(e -> {
                 wait = null;
                 runNextAction(actions);
