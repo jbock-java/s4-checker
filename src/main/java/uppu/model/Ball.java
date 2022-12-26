@@ -51,13 +51,6 @@ public class Ball {
 
     public void move(
             Mover mover,
-            int seconds,
-            Runnable onSuccess) {
-        move(mover, mover.midPoint().normalize(), seconds, onSuccess);
-    }
-
-    public void move(
-            Mover mover,
             Point3D span,
             int seconds,
             Runnable onSuccess) {
@@ -94,6 +87,38 @@ public class Ball {
         }
 
         tl = new Timeline(frames);
+        tl.setCycleCount(1);
+        tl.play();
+        tl.setOnFinished(ev -> {
+            onSuccess.run();
+        });
+    }
+
+    public void moveSimple(
+            Mover mover,
+            int seconds,
+            Runnable onSuccess) {
+        Point3D source = mover.source().homePoint();
+        Point3D target = mover.destination().homePoint();
+
+        if (mover.source().equals(mover.destination())) {
+            setLocation(target);
+            onSuccess.run();
+            return;
+        }
+
+        DoubleProperty x = sphere.translateXProperty();
+        DoubleProperty y = sphere.translateYProperty();
+        DoubleProperty z = sphere.translateZProperty();
+
+        tl = new Timeline(new KeyFrame(Duration.ZERO,
+                new KeyValue(x, source.getX()),
+                new KeyValue(y, source.getY()),
+                new KeyValue(z, source.getZ())),
+                new KeyFrame(Duration.seconds(seconds),
+                        new KeyValue(x, target.getX(), Interpolator.LINEAR),
+                        new KeyValue(y, target.getY(), Interpolator.LINEAR),
+                        new KeyValue(z, target.getZ(), Interpolator.LINEAR)));
         tl.setCycleCount(1);
         tl.play();
         tl.setOnFinished(ev -> {

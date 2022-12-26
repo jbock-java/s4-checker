@@ -45,9 +45,9 @@ public class Presenter {
         view.setOnAnimationFinished(() -> {
             view.stop(true);
             view.setHomesVisible(true);
-            wait = runDelayed(4000, () -> {
+            wait = runDelayed(800, () -> {
                 view.setHomesVisible(false);
-                wait = runDelayed(800, () -> {
+                wait = runDelayed(2000, () -> {
                     if (current < actions.size() - 1) {
                         current++;
                         view.setSelectedAction(actions.get(current));
@@ -57,14 +57,14 @@ public class Presenter {
         });
         view.setOnPauseButtonClicked(() -> {
             running = !running;
-            view.setRunning(running);
+            setRunning(running);
         });
         view.setOnEditButtonClicked(() -> {
             stop(false);
             InputView inputView = InputView.create();
             inputView.setContent(actions);
             inputView.setOnCancel(() -> {;
-                view.setRunning(true);
+                setRunning(true);
             });
             inputView.setOnSave(lines -> {
                 S4Checker.readLines(lines).ifLeftOrElse(
@@ -78,19 +78,29 @@ public class Presenter {
                             view.setActions(actions);
                             writeToFile(actions);
                             actions.stream().findFirst().ifPresent(view::setSelectedAction);
-                            view.setRunning(true);
+                            setRunning(true);
                         });
                 inputView.close();
             });
         });
         runDelayed(0, () -> view.setHomesVisible(false));
         runDelayed(2000, () -> {
-            view.setRunning(true);
+            setRunning(true);
             Platform.runLater(() -> {
                 view.setActions(actions);
                 actions.stream().findFirst().ifPresent(view::setSelectedAction);
             });
         });
+    }
+
+    private void setRunning(boolean running) {
+        view.setRunning(running);
+        if (wait != null && running) {
+            wait.play();
+        }
+        if (wait != null && !running) {
+            wait.pause();
+        }
     }
 
     private void stop(boolean shred) {

@@ -190,7 +190,7 @@ public class PermutationView {
                     .collect(groupingBy(mover -> mover.path().normalize()));
             for (List<Mover> movers : m.values()) {
                 if (movers.size() == 1) {
-                    movers.get(0).ball().move(movers.get(0), 3, () -> {
+                    movers.get(0).ball().moveSimple(movers.get(0), 3, () -> {
                         if (count.decrementAndGet() == 0) {
                             runNextAction(actions);
                         }
@@ -227,8 +227,10 @@ public class PermutationView {
 
     public void setRunning(boolean running) {
         if (!running && wait != null) {
-            wait.stop();
-            wait = null;
+            wait.pause();
+        }
+        if (running && wait != null) {
+            wait.play();
         }
         for (Color color : Color.getValues()) {
             color.sphere().setRunning(running);
