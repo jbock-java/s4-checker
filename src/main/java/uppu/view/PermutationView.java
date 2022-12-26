@@ -64,13 +64,22 @@ public class PermutationView {
     private final BorderPane sidePanel = new BorderPane();
     private final Button pauseButton = new Button("Pause");
     private final Button editButton = new Button("Edit");
+    private final Group root = new Group();
+    private final SubScene subScene = new SubScene(root, WIDTH_CANVAS, HEIGHT, true, SceneAntialiasing.DISABLED);
+
     Consumer<ActionSequence> onSelected = action -> {
     };
     private final ChangeListener<ActionSequence> changeListener = (observable, oldValue, newValue) -> onSelected.accept(newValue);
     private Runnable onFinished = () -> {
     };
+    private Runnable onPauseButtonClicked = () -> {
+    };
+    private Runnable onEditButtonClicked = () -> {
+    };
 
     private PauseTransition wait;
+
+    // Build the Scene Graph
 
     private PermutationView(Stage stage) {
         this.stage = stage;
@@ -106,6 +115,21 @@ public class PermutationView {
         splitPane.getItems().addAll(createSubScene(), sidePanel);
         splitPane.setDividerPositions(0.5f);
         actions.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        pauseButton.setOnMouseClicked(e -> onPauseButtonClicked.run());
+        editButton.setOnMouseClicked(e -> onEditButtonClicked.run());
+        actions.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ESCAPE) {
+                stage.close();
+                return;
+            }
+            if (e.getCode() == KeyCode.SPACE) {
+                onPauseButtonClicked.run();                
+                return;
+            }
+            if (e.getCode() == KeyCode.E) {
+                onEditButtonClicked.run();
+            }
+        });
     }
 
     private SubScene createSubScene() {
@@ -115,8 +139,6 @@ public class PermutationView {
                 new Translate(CAMERA_POINT.getX(), CAMERA_POINT.getY(), CAMERA_POINT.getZ()),
                 new Rotate(-20.6f, new Point3D(1, 0, 0)));
 
-        // Build the Scene Graph
-        Group root = new Group();
         root.getChildren().add(camera);
         for (Color color : Color.getValues()) {
             color.homeSphere().setLocation(color.homePoint());
@@ -126,7 +148,6 @@ public class PermutationView {
         }
 
         // Use a SubScene
-        SubScene subScene = new SubScene(root, WIDTH_CANVAS, HEIGHT, true, SceneAntialiasing.DISABLED);
         subScene.setFill(GRAY);
         subScene.setCamera(camera);
         return subScene;
@@ -245,11 +266,11 @@ public class PermutationView {
     }
 
     public void setOnEditButtonClicked(Runnable onClick) {
-        editButton.setOnMouseClicked(e -> onClick.run());
+        this.onEditButtonClicked = onClick;
     }
 
     public void setOnPauseButtonClicked(Runnable onClick) {
-        pauseButton.setOnMouseClicked(e -> onClick.run());
+        this.onPauseButtonClicked = onClick;
     }
 
     public void setRunning(boolean running) {

@@ -4,6 +4,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
@@ -49,6 +50,11 @@ public class InputView {
         URL style = Objects.requireNonNull(getClass().getResource("/uppu/css/style.css"));
         Scene scene = new Scene(borderPane, PermutationView.WIDTH_PANEL * 2, HEIGHT_TEXTAREA);
         scene.getStylesheets().add(style.toExternalForm());
+        textArea.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ESCAPE) {
+                stage.close();
+            }
+        });
         return scene;
     }
 
