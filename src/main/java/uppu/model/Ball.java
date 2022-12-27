@@ -131,7 +131,7 @@ public class Ball {
     public void moveCircle(
             Mover mover,
             Rotation rotation,
-            int seconds,
+            double seconds,
             Runnable onSuccess,
             double angle) {
 
@@ -154,7 +154,7 @@ public class Ball {
             Mover mover,
             Rotation rotation,
             double angle,
-            int seconds) {
+            double seconds) {
         Point3D source = mover.source().homePoint();
         int steps = 64;
         double angle_step = angle / steps;
