@@ -12,7 +12,6 @@ import javafx.scene.SubScene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.Slider;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -49,9 +48,6 @@ public class PermutationView {
     private static final int WIDTH_CANVAS = 860;
     private static final int HEIGHT = 900;
     static final int WIDTH_PANEL = 500;
-    private static final int HEIGHT_SLIDER = 12;
-    private static final int INITIAL_SPEED = 16;
-    private static final int HEIGHT_BUTTON_PANE = 20;
 
     private static final javafx.scene.paint.Color GRAY = javafx.scene.paint.Color.rgb(64, 64, 64);
 
@@ -60,7 +56,6 @@ public class PermutationView {
     private final SplitPane splitPane = new SplitPane();
     private final GridPane buttonPanel = new GridPane();
     private final BorderPane borderPane = new BorderPane();
-    private final Slider slider = new Slider(0, 32, INITIAL_SPEED);
     private final BorderPane sidePanel = new BorderPane();
     private final Button pauseButton = new Button("Pause");
     private final Button editButton = new Button("Edit");
@@ -92,7 +87,6 @@ public class PermutationView {
     public void init() {
         createElements();
         borderPane.setCenter(splitPane);
-        borderPane.setBottom(slider);
         Scene scene = new Scene(borderPane);
         scene.addEventHandler(KeyEvent.KEY_PRESSED, t -> {
             if (t.getCode() == KeyCode.ESCAPE) {
@@ -123,7 +117,7 @@ public class PermutationView {
                 return;
             }
             if (e.getCode() == KeyCode.SPACE) {
-                onPauseButtonClicked.run();                
+                onPauseButtonClicked.run();
                 return;
             }
             if (e.getCode() == KeyCode.E) {
@@ -151,10 +145,6 @@ public class PermutationView {
         subScene.setFill(GRAY);
         subScene.setCamera(camera);
         return subScene;
-    }
-
-    public void setTitle(String title) {
-        stage.setTitle(title);
     }
 
     public void setOnActionSelected(Consumer<ActionSequence> onSelected) {
@@ -201,19 +191,28 @@ public class PermutationView {
                 m.ball().setLocation(m.path().destination().homePoint());
             }
             List<Mover> allMovers = ((Action.MoveAction) action).nonZeroMovers();
+            if (allMovers.isEmpty()) {
+                runNextAction(actions);
+                return;
+            }
             AtomicInteger count = new AtomicInteger(allMovers.size());
             if (allMovers.size() == 3) {
                 Mover m0 = allMovers.get(0);
                 Mover m1 = allMovers.get(1);
                 Mover m2 = allMovers.get(2);
-                Point3D center = m0.midPoint().add(m1.midPoint()).add(m2.midPoint()).multiply(1f / 3f);
-                Rotation rotation = Rotation.fromAxis(center);
+                Point3D axis = m0.midPoint().add(m1.midPoint()).add(m2.midPoint());
+                Rotation rotation = Rotation.fromAxis(axis);
+                Point3D source = m0.source().homePoint();
+                Point3D dest = m0.destination().homePoint();
+                if (rotation.apply(source, 0.01).distance(dest) > source.distance(dest)) {
+                    rotation = rotation.invert();
+                }
                 for (int i = 0; i < 3; i++) {
                     allMovers.get(i).ball().moveCircle(allMovers.get(i), rotation, 3, () -> {
                         if (count.decrementAndGet() == 0) {
                             runNextAction(actions);
                         }
-                    }, Math.PI * (2f / 3f), true);
+                    }, Math.PI * (2f / 3f));
                 }
                 return;
             }
@@ -232,7 +231,7 @@ public class PermutationView {
                         if (count.decrementAndGet() == 0) {
                             runNextAction(actions);
                         }
-                    }, Math.PI, false);
+                    }, Math.PI);
                 }
                 return;
             }

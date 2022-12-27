@@ -132,9 +132,8 @@ public class Ball {
             Mover mover,
             Rotation rotation,
             int seconds,
-            Runnable onSuccess, 
-            double angle,
-            boolean detectOrientation) {
+            Runnable onSuccess,
+            double angle) {
 
         if (mover.source().equals(mover.destination())) {
             setLocation(mover.destination().homePoint());
@@ -142,7 +141,7 @@ public class Ball {
             return;
         }
 
-        tl = new Timeline(getRotationTimeline(mover, rotation, angle, seconds, detectOrientation));
+        tl = new Timeline(getRotationTimeline(mover, rotation, angle, seconds));
         tl.setCycleCount(1);
         tl.play();
         tl.setOnFinished(ev -> {
@@ -155,23 +154,18 @@ public class Ball {
             Mover mover,
             Rotation rotation,
             double angle,
-            int seconds,
-            boolean detectOrientation) {
+            int seconds) {
         Point3D source = mover.source().homePoint();
-        Point3D dest = mover.destination().homePoint();
-        int segments = 64;
-        double frac = angle / segments;
-        float factor = 1f / segments;
+        int steps = 64;
+        double angle_step = angle / steps;
+        float time_step = (float) seconds / steps;
         DoubleProperty x = sphere.translateXProperty();
         DoubleProperty y = sphere.translateYProperty();
         DoubleProperty z = sphere.translateZProperty();
-        KeyFrame[] frames = new KeyFrame[segments + 1];
-        if (detectOrientation && rotation.apply(source, frac).distance(dest) > source.distance(dest)) {
-            frac = -frac;
-        }
-        for (int i = 0; i <= segments; i++) {
-            Point3D dd = rotation.apply(source, frac * i);
-            frames[i] = new KeyFrame(Duration.seconds(seconds * factor * i),
+        KeyFrame[] frames = new KeyFrame[steps + 1];
+        for (int i = 0; i <= steps; i++) {
+            Point3D dd = rotation.apply(source, angle_step * i);
+            frames[i] = new KeyFrame(Duration.seconds(time_step * i),
                     new KeyValue(x, dd.getX(), Interpolator.LINEAR),
                     new KeyValue(y, dd.getY(), Interpolator.LINEAR),
                     new KeyValue(z, dd.getZ(), Interpolator.LINEAR));

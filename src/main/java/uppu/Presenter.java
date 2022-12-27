@@ -80,7 +80,10 @@ public class Presenter {
                             view.setActions(actions);
                             writeToFile(actions);
                             actions.stream().findFirst().ifPresent(view::setSelectedAction);
-                            setRunning(true);
+                            if (!actions.isEmpty()) {
+                                current = 0;
+                            }
+                            setRunning(!actions.isEmpty());
                         });
                 inputView.close();
             });
