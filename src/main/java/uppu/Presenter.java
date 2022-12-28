@@ -38,12 +38,11 @@ public class Presenter {
 
     public void run() {
         view.setOnActionSelected(action -> {
-            stop(true);
+            stop();
             current = actions.indexOf(action);
             view.setSelectedAction(action);
         });
         view.setOnAnimationFinished(() -> {
-            view.stop(true);
             view.setHomesVisible(true);
             wait = runDelayed(1200, () -> {
                 wait = null;
@@ -62,10 +61,10 @@ public class Presenter {
             setRunning(running);
         });
         view.setOnEditButtonClicked(() -> {
-            stop(false);
+            setRunning(false);
             InputView inputView = InputView.create();
             inputView.setContent(actions);
-            inputView.setOnCancel(() -> {;
+            inputView.setOnCancel(() -> {
                 setRunning(true);
             });
             inputView.setOnSave(lines -> {
@@ -75,7 +74,7 @@ public class Presenter {
                             alert.showAndWait();
                         },
                         newCommands -> {
-                            stop(true);
+                            stop();
                             actions = State.create().getActions(newCommands);
                             view.setActions(actions);
                             writeToFile(actions);
@@ -112,12 +111,12 @@ public class Presenter {
         }
     }
 
-    private void stop(boolean shred) {
+    private void stop() {
         if (wait != null) {
             wait.stop();
             wait = null;
         }
-        view.stop(shred);
+        view.stop();
         view.setHomesVisible(false);
     }
 

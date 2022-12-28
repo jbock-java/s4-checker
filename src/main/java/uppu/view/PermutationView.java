@@ -1,6 +1,7 @@
 package uppu.view;
 
 import javafx.animation.PauseTransition;
+import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Point3D;
 import javafx.geometry.Pos;
@@ -19,6 +20,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
@@ -27,11 +29,12 @@ import uppu.engine.Mover;
 import uppu.engine.Path;
 import uppu.model.Action;
 import uppu.model.ActionSequence;
-import uppu.model.Color;
+import uppu.model.Colour;
 import uppu.model.Rotation;
 
 import java.net.URL;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +52,7 @@ public class PermutationView {
     private static final int HEIGHT = 900;
     static final int WIDTH_PANEL = 500;
 
-    private static final javafx.scene.paint.Color GRAY = javafx.scene.paint.Color.rgb(64, 64, 64);
+    private static final Color GRAY = Color.rgb(64, 64, 64);
 
     private final ListView<ActionSequence> actions = new ListView<>();
     private final Stage stage;
@@ -73,6 +76,7 @@ public class PermutationView {
     };
 
     private PauseTransition wait;
+    private final List<Timeline> tl = new ArrayList<>();
 
     // Build the Scene Graph
 
@@ -134,7 +138,7 @@ public class PermutationView {
                 new Rotate(-20.6f, new Point3D(1, 0, 0)));
 
         root.getChildren().add(camera);
-        for (Color color : Color.getValues()) {
+        for (Colour color : Colour.getValues()) {
             color.homeSphere().setLocation(color.homePoint());
             color.sphere().setLocation(color.homePoint());
             root.getChildren().add(color.homeSphere().sphere());
@@ -164,11 +168,13 @@ public class PermutationView {
     }
 
     private void runNextAction(Deque<Action> actions) {
+        tl.clear();
         Action action = actions.pollFirst();
         if (action == null) {
             wait = new PauseTransition(Duration.millis(400));
             wait.setOnFinished(e -> {
                 wait = null;
+                tl.clear();
                 onFinished.run();
             });
             wait.play();
@@ -208,11 +214,11 @@ public class PermutationView {
                     rotation = rotation.invert();
                 }
                 for (int i = 0; i < 3; i++) {
-                    allMovers.get(i).ball().moveCircle(allMovers.get(i), rotation, 3, () -> {
+                    tl.add(allMovers.get(i).moveCircle(rotation, 3, () -> {
                         if (count.decrementAndGet() == 0) {
                             runNextAction(actions);
                         }
-                    }, Math.PI * (2f / 3f));
+                    }, Math.PI * (2f / 3f)));
                 }
                 return;
             }
@@ -227,32 +233,32 @@ public class PermutationView {
                 Point3D axis = a.midPoint().subtract(b.midPoint());
                 Rotation rotation = Rotation.fromAxis(axis);
                 for (Mover mover : allMovers) {
-                    mover.ball().moveCircle(mover, rotation, 4.5, () -> {
+                    tl.add(mover.moveCircle(rotation, 4.5, () -> {
                         if (count.decrementAndGet() == 0) {
                             runNextAction(actions);
                         }
-                    }, Math.PI);
+                    }, Math.PI));
                 }
                 return;
             }
             for (List<Mover> movers : m.values()) {
                 if (movers.size() == 1) {
-                    movers.get(0).ball().moveSimple(movers.get(0), 3, () -> {
+                    tl.add(movers.get(0).moveSimple(3, () -> {
                         if (count.decrementAndGet() == 0) {
                             runNextAction(actions);
                         }
-                    });
+                    }));
                 } else {
-                    movers.get(0).ball().move(movers.get(0), movers.get(0).midPoint().normalize(), 3, () -> {
+                    tl.add(movers.get(0).move(movers.get(0).midPoint().normalize(), 3, () -> {
                         if (count.decrementAndGet() == 0) {
                             runNextAction(actions);
                         }
-                    });
-                    movers.get(1).ball().move(movers.get(1), movers.get(0).midPoint().normalize().multiply(-1), 3, () -> {
+                    }));
+                    tl.add(movers.get(1).move(movers.get(0).midPoint().normalize().multiply(-1), 3, () -> {
                         if (count.decrementAndGet() == 0) {
                             runNextAction(actions);
                         }
-                    });
+                    }));
                 }
             }
         }
@@ -279,24 +285,31 @@ public class PermutationView {
         if (running && wait != null) {
             wait.play();
         }
-        for (Color color : Color.getValues()) {
-            color.sphere().setRunning(running);
+        if (running) {
+            for (Timeline timeline : tl) {
+                timeline.play();
+            }
+        } else {
+            for (Timeline timeline : tl) {
+                timeline.pause();
+            }
         }
     }
 
-    public void stop(boolean shred) {
+    public void stop() {
         if (wait != null) {
             wait.stop();
             wait = null;
         }
-        for (Color color : Color.getValues()) {
-            color.sphere().stop(shred);
+        for (Timeline timeline : tl) {
+            timeline.stop();
         }
+        tl.clear();
     }
 
     public void setHomesVisible(
             boolean visible) {
-        for (Color color : Color.getValues()) {
+        for (Colour color : Colour.getValues()) {
             color.homeSphere().sphere().setVisible(visible);
         }
     }

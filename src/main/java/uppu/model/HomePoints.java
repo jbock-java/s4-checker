@@ -39,7 +39,7 @@ public final class HomePoints {
         return new Point3D(result.get(0), result.get(1), result.get(2));
     }
 
-    static Point3D homePoint(Color color) {
+    static Point3D homePoint(Colour color) {
         return switch (color) {
             case RED -> homePoints().get(0);
             case GREEN -> homePoints().get(1);

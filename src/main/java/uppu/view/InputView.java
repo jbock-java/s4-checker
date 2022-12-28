@@ -26,6 +26,8 @@ public class InputView {
     private final GridPane buttonPanel = new GridPane();
     private final Button saveButton = new Button("Save");
     private final BorderPane borderPane = new BorderPane();
+    private Runnable onCancel = () -> {
+    };
 
     private InputView() {
     }
@@ -52,6 +54,7 @@ public class InputView {
         scene.getStylesheets().add(style.toExternalForm());
         textArea.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
+                onCancel.run();
                 stage.close();
             }
         });
@@ -74,6 +77,7 @@ public class InputView {
     }
 
     public void setOnCancel(Runnable onCancel) {
+        this.onCancel = onCancel;
         stage.setOnCloseRequest(e -> onCancel.run());
     }
 

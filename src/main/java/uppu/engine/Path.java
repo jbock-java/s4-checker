@@ -1,11 +1,11 @@
 package uppu.engine;
 
 import javafx.geometry.Point3D;
-import uppu.model.Color;
+import uppu.model.Colour;
 
 public record Path(
-        Color source, // from which color-home
-        Color destination // to which color-home
+        Colour source, // from which color-home
+        Colour destination // to which color-home
 ) {
 
     public Path normalize() {

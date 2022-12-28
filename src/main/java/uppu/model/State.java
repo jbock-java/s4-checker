@@ -1,7 +1,6 @@
 package uppu.model;
 
 import io.parmigiano.Permutation;
-import javafx.geometry.Point3D;
 import uppu.engine.Mover;
 import uppu.engine.Path;
 import uppu.model.Command.MoveCommand;
@@ -24,7 +23,7 @@ public final class State {
     }
 
     public List<ActionSequence> getActions(List<CommandSequence> sequences) {
-        List<Color> state = Color.getValues();
+        List<Colour> state = Colour.getValues();
         List<ActionSequence> actionSequences = new ArrayList<>();
         for (CommandSequence sequence : sequences) {
             List<Action> actions = new ArrayList<>(sequence.commands().size());
@@ -40,11 +39,11 @@ public final class State {
 
     private record ActionWithState(
             Action action,
-            List<Color> finalState) {
+            List<Colour> finalState) {
     }
 
     private ActionWithState getAction(
-            List<Color> state,
+            List<Colour> state,
             Command command) {
         if (command instanceof MoveCommand) {
             return getMoveAction(((MoveCommand) command).permutation(), state);
@@ -57,14 +56,14 @@ public final class State {
 
     private ActionWithState getMoveAction(
             Permutation p,
-            List<Color> state) {
+            List<Colour> state) {
         List<Mover> movers = new ArrayList<>();
-        Color[] newColors = new Color[state.size()];
+        Colour[] newColors = new Colour[state.size()];
         for (int i = 0; i < state.size(); i++) {
-            Color color = state.get(i);
+            Colour color = state.get(i);
             int j = p.apply(i);
             newColors[j] = color;
-            movers.add(new Mover(color, new Path(Color.get(i), Color.get(j))));
+            movers.add(Mover.create(color, new Path(Colour.get(i), Colour.get(j))));
         }
         return new ActionWithState(new Action.MoveAction(movers), List.of(newColors));
     }

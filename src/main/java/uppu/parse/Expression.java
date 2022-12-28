@@ -5,7 +5,10 @@ import io.jbock.util.Either;
 import static io.jbock.util.Either.right;
 import static uppu.parse.TokenParser.parseContent;
 
-sealed interface Expression permits Expression.DotExpression, Expression.HomeExpression, Expression.ParenExpression {
+sealed interface Expression permits 
+        Expression.DotExpression, 
+        Expression.HomeExpression,
+        Expression.ParenExpression {
 
     DotExpression DOT_EXPRESSION = new DotExpression();
 
