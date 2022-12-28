@@ -12,6 +12,8 @@ import uppu.model.Ball;
 import uppu.model.Colour;
 import uppu.model.Rotation;
 
+import static java.lang.Math.round;
+import static java.lang.Math.toIntExact;
 import static java.lang.System.arraycopy;
 
 public final class Mover {
@@ -196,20 +198,14 @@ public final class Mover {
             double topSpeed,
             double acc_n,
             double dec_0) {
-        int n = numberOfCruiseSteps(topSpeed, acc_n, dec_0);
-        double[] cruise = new double[n];
-        for (int i = 0; i < n; i++) {
-            cruise[i] = acc_n + (topSpeed * (i + 1));
+        double dist = dec_0 - acc_n;
+        int n = toIntExact(round(dist / topSpeed));
+        double speed = dist / n;
+        double[] cruise = new double[n - 1];
+        for (int i = 0; i < n - 1; i++) {
+            cruise[i] = acc_n + (speed * (i + 1));
         }
         return cruise;
-    }
-
-    private static int numberOfCruiseSteps(double topSpeed, double acc_n, double dec_0) {
-        int n = (int) ((dec_0 - acc_n) / topSpeed);
-        if (Math.abs(acc_n + (topSpeed * n) - dec_0) < topSpeed / 2) {
-            return n - 1;
-        }
-        return n;
     }
 
     static double[] accelerate(double topSpeed) {

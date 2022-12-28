@@ -140,6 +140,7 @@ public class PermutationView {
         root.getChildren().add(camera);
         for (Colour color : Colour.getValues()) {
             color.homeSphere().setLocation(color.homePoint());
+            color.homeSphere().sphere().setVisible(false);
             color.sphere().setLocation(color.homePoint());
             root.getChildren().add(color.homeSphere().sphere());
             root.getChildren().add(color.sphere().sphere());
@@ -309,8 +310,8 @@ public class PermutationView {
 
     public void setHomesVisible(
             boolean visible) {
-        for (Colour color : Colour.getValues()) {
-            color.homeSphere().sphere().setVisible(visible);
-        }
+//        for (Colour color : Colour.getValues()) {
+//            color.homeSphere().sphere().setVisible(visible);
+//        }
     }
 }
