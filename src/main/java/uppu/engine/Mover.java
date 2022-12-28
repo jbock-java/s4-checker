@@ -23,7 +23,7 @@ public final class Mover {
 
     private Mover(
             Path path,
-            Point3D source, 
+            Point3D source,
             Point3D dest,
             Sphere sphere,
             Ball ball) {
@@ -176,10 +176,38 @@ public final class Mover {
             double angle,
             double seconds) {
         int steps = (int) (seconds * 20);
-        double angle_step = angle / steps;
-        double[] result = new double[steps + 1];
-        for (int i = 0; i <= steps; i++) {
-            result[i] = (angle_step * i);
+        double topSpeed = angle / steps;
+        double[] acc = accelerate(topSpeed);
+        double acc_n = acc[acc.length - 1];
+        double dec_0 = angle - acc_n;
+        double[] dec = decelerate(dec_0, topSpeed);
+        int n = (int) ((dec_0 - acc_n) / topSpeed);
+        double[] cruise = new double[n - 1];
+        for (int i = 1; i < n; i++) {
+            cruise[i - 1] = acc_n + (topSpeed * i);
+        }
+        double[] result = new double[acc.length + cruise.length + dec.length];
+        System.arraycopy(acc, 0, result, 0, acc.length);
+        System.arraycopy(cruise, 0, result, acc.length, cruise.length);
+        System.arraycopy(dec, 0, result, acc.length + cruise.length, dec.length);
+        return result;
+    }
+
+    static double[] accelerate(double topSpeed) {
+        double[] result = new double[20];
+        double inc = topSpeed / (result.length - 1);
+        for (int i = 1; i < result.length; i++) {
+            result[i] = result[i - 1] + (inc * i);
+        }
+        return result;
+    }
+
+    static double[] decelerate(double initial, double topSpeed) {
+        double[] result = new double[20];
+        result[0] = initial;
+        double inc = topSpeed / (result.length - 1);
+        for (int i = 1; i < result.length; i++) {
+            result[i] = result[i - 1] + (inc * (result.length - i));
         }
         return result;
     }
