@@ -233,7 +233,7 @@ public class PermutationView {
                 Point3D axis = a.midPoint().subtract(b.midPoint());
                 Rotation rotation = Rotation.fromAxis(axis);
                 for (Mover mover : allMovers) {
-                    tl.add(mover.moveCircle(rotation, 4.5, Math.PI, () -> {
+                    tl.add(mover.moveCircle(rotation, 4.2, Math.PI, () -> {
                         if (count.decrementAndGet() == 0) {
                             runNextAction(actions);
                         }

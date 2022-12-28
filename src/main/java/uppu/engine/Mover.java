@@ -12,7 +12,11 @@ import uppu.model.Ball;
 import uppu.model.Colour;
 import uppu.model.Rotation;
 
+import static java.lang.System.arraycopy;
+
 public final class Mover {
+
+    static final int ACC_FRAMES = 30;
 
     private final Path path;
     private final Point3D source;
@@ -172,29 +176,44 @@ public final class Mover {
         return frames;
     }
 
-    private double[] angleSteps(
+    static double[] angleSteps(
             double angle,
             double seconds) {
-        int steps = (int) (seconds * 20);
-        double topSpeed = angle / steps;
+        double topSpeed = angle / (seconds * 20);
         double[] acc = accelerate(topSpeed);
         double acc_n = acc[acc.length - 1];
         double dec_0 = angle - acc_n;
         double[] dec = decelerate(dec_0, topSpeed);
-        int n = (int) ((dec_0 - acc_n) / topSpeed);
-        double[] cruise = new double[n - 1];
-        for (int i = 1; i < n; i++) {
-            cruise[i - 1] = acc_n + (topSpeed * i);
-        }
+        double[] cruise = createCruise(topSpeed, acc_n, dec_0);
         double[] result = new double[acc.length + cruise.length + dec.length];
-        System.arraycopy(acc, 0, result, 0, acc.length);
-        System.arraycopy(cruise, 0, result, acc.length, cruise.length);
-        System.arraycopy(dec, 0, result, acc.length + cruise.length, dec.length);
+        arraycopy(acc, 0, result, 0, acc.length);
+        arraycopy(cruise, 0, result, acc.length, cruise.length);
+        arraycopy(dec, 0, result, acc.length + cruise.length, dec.length);
         return result;
     }
 
+    private static double[] createCruise(
+            double topSpeed,
+            double acc_n,
+            double dec_0) {
+        int n = numberOfCruiseSteps(topSpeed, acc_n, dec_0);
+        double[] cruise = new double[n];
+        for (int i = 0; i < n; i++) {
+            cruise[i] = acc_n + (topSpeed * (i + 1));
+        }
+        return cruise;
+    }
+
+    private static int numberOfCruiseSteps(double topSpeed, double acc_n, double dec_0) {
+        int n = (int) ((dec_0 - acc_n) / topSpeed);
+        if (Math.abs(acc_n + (topSpeed * n) - dec_0) < topSpeed / 2) {
+            return n - 1;
+        }
+        return n;
+    }
+
     static double[] accelerate(double topSpeed) {
-        double[] result = new double[20];
+        double[] result = new double[ACC_FRAMES];
         double inc = topSpeed / (result.length - 1);
         for (int i = 1; i < result.length; i++) {
             result[i] = result[i - 1] + (inc * i);
@@ -203,9 +222,9 @@ public final class Mover {
     }
 
     static double[] decelerate(double initial, double topSpeed) {
-        double[] result = new double[20];
-        result[0] = initial;
+        double[] result = new double[ACC_FRAMES];
         double inc = topSpeed / (result.length - 1);
+        result[0] = initial;
         for (int i = 1; i < result.length; i++) {
             result[i] = result[i - 1] + (inc * (result.length - i));
         }
