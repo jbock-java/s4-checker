@@ -12,7 +12,7 @@ class MoverTest {
         double angle = Math.PI;
         double seconds = 4.2;
         double topSpeed = angle / (seconds * 20);
-        double[] result = Mover.angleSteps(angle, seconds);
+        double[] result = Mover.smoothInterval(angle, seconds);
         checkAcc(result, topSpeed);
     }
 
@@ -21,7 +21,7 @@ class MoverTest {
         double angle = Math.PI * (2f / 3f);
         double seconds = 3;
         double topSpeed = angle / (seconds * 20);
-        double[] result = Mover.angleSteps(angle, seconds);
+        double[] result = Mover.smoothInterval(angle, seconds);
         checkAcc(result, topSpeed);
     }
 

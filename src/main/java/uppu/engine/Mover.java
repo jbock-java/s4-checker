@@ -84,21 +84,23 @@ public final class Mover {
         DoubleProperty y = sphere.translateYProperty();
         DoubleProperty z = sphere.translateZProperty();
 
-        int segments = 64;
-        KeyFrame[] frames = new KeyFrame[segments + 1];
-        float frac = 1.0f / segments;
-        Point3D inc = dest.subtract(source).multiply(frac);
-        for (int i = 0; i <= segments; i++) {
-            Point3D p = source.add(inc.multiply(i));
-            double factor = Math.sin(Math.PI * frac * i);
+
+        double[] steps = smoothInterval(1, seconds);
+        float time_step = (float) seconds / steps.length;
+        KeyFrame[] frames = new KeyFrame[steps.length];
+        Point3D inc = dest.subtract(source);
+        for (int i = 0; i < steps.length; i++) {
+            Point3D p = source.add(inc.multiply(steps[i]));
+            double factor = Math.sin(Math.PI * steps[i]);
             Point3D dd = p.add(span.multiply(factor * 0.25));
-            frames[i] = new KeyFrame(Duration.seconds(seconds * frac * i),
+            frames[i] = new KeyFrame(Duration.seconds(time_step * i),
                     new KeyValue(x, dd.getX(), Interpolator.LINEAR),
                     new KeyValue(y, dd.getY(), Interpolator.LINEAR),
                     new KeyValue(z, dd.getZ(), Interpolator.LINEAR));
         }
 
         Timeline tl = new Timeline(frames);
+
         tl.setCycleCount(1);
         tl.setOnFinished(ev -> {
             onSuccess.run();
@@ -121,14 +123,20 @@ public final class Mover {
         DoubleProperty y = sphere.translateYProperty();
         DoubleProperty z = sphere.translateZProperty();
 
-        Timeline tl = new Timeline(new KeyFrame(Duration.ZERO,
-                new KeyValue(x, source.getX()),
-                new KeyValue(y, source.getY()),
-                new KeyValue(z, source.getZ())),
-                new KeyFrame(Duration.seconds(seconds),
-                        new KeyValue(x, dest.getX(), Interpolator.LINEAR),
-                        new KeyValue(y, dest.getY(), Interpolator.LINEAR),
-                        new KeyValue(z, dest.getZ(), Interpolator.LINEAR)));
+        double[] steps = smoothInterval(1, seconds);
+        float time_step = (float) seconds / steps.length;
+        KeyFrame[] frames = new KeyFrame[steps.length];
+        Point3D inc = dest.subtract(source);
+        for (int i = 0; i < steps.length; i++) {
+            Point3D dd = source.add(inc.multiply(steps[i]));
+            frames[i] = new KeyFrame(Duration.seconds(time_step * i),
+                    new KeyValue(x, dd.getX(), Interpolator.LINEAR),
+                    new KeyValue(y, dd.getY(), Interpolator.LINEAR),
+                    new KeyValue(z, dd.getZ(), Interpolator.LINEAR));
+        }
+
+        Timeline tl = new Timeline(frames);
+
         tl.setCycleCount(1);
         tl.setOnFinished(ev -> {
             onSuccess.run();
@@ -143,7 +151,7 @@ public final class Mover {
             double angle,
             Runnable onSuccess) {
 
-        if (source().equals(destination())) {
+        if (path.isZero()) {
             ball.setLocation(destination().homePoint());
             onSuccess.run();
             return new Timeline();
@@ -165,7 +173,7 @@ public final class Mover {
         DoubleProperty x = sphere.translateXProperty();
         DoubleProperty y = sphere.translateYProperty();
         DoubleProperty z = sphere.translateZProperty();
-        double[] angleSteps = angleSteps(angle, seconds);
+        double[] angleSteps = smoothInterval(angle, seconds);
         float time_step = (float) seconds / angleSteps.length;
         KeyFrame[] frames = new KeyFrame[angleSteps.length];
         for (int i = 0; i < angleSteps.length; i++) {
@@ -178,13 +186,13 @@ public final class Mover {
         return frames;
     }
 
-    static double[] angleSteps(
-            double angle,
+    static double[] smoothInterval(
+            double length,
             double seconds) {
-        double topSpeed = angle / (seconds * 20);
+        double topSpeed = length / (seconds * 20);
         double[] acc = accelerate(topSpeed);
         double acc_n = acc[acc.length - 1];
-        double dec_0 = angle - acc_n;
+        double dec_0 = length - acc_n;
         double[] dec = decelerate(dec_0, topSpeed);
         double[] cruise = createCruise(topSpeed, acc_n, dec_0);
         double[] result = new double[acc.length + cruise.length + dec.length];
