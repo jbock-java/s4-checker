@@ -39,6 +39,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -73,6 +74,8 @@ public class PermutationView {
     private Runnable onPauseButtonClicked = () -> {
     };
     private Runnable onEditButtonClicked = () -> {
+    };
+    private Runnable onBack = () -> {
     };
 
     private PauseTransition wait;
@@ -126,6 +129,14 @@ public class PermutationView {
             }
             if (e.getCode() == KeyCode.E) {
                 onEditButtonClicked.run();
+                return;
+            }
+            if (e.getCode() == KeyCode.LEFT) {
+                onBack.run();
+                return;
+            }
+            if (e.getCode() == KeyCode.BACK_SPACE) {
+                onBack.run();
             }
         });
     }
@@ -233,6 +244,9 @@ public class PermutationView {
                 Mover b = group1.get(0);
                 Point3D axis = a.midPoint().subtract(b.midPoint());
                 Rotation rotation = Rotation.fromAxis(axis);
+                if (ThreadLocalRandom.current().nextBoolean()) {
+                    rotation = rotation.invert();
+                }
                 for (Mover mover : allMovers) {
                     tl.add(mover.moveCircle(rotation, 4.2, Math.PI, () -> {
                         if (count.decrementAndGet() == 0) {
@@ -277,6 +291,10 @@ public class PermutationView {
 
     public void setOnPauseButtonClicked(Runnable onClick) {
         this.onPauseButtonClicked = onClick;
+    }
+
+    public void setOnBack(Runnable onBack) {
+        this.onBack = onBack;
     }
 
     public void setRunning(boolean running) {

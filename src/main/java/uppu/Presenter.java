@@ -43,22 +43,26 @@ public class Presenter {
             view.setSelectedAction(action);
         });
         view.setOnAnimationFinished(() -> {
-            view.setHomesVisible(true);
-            wait = runDelayed(1200, () -> {
+            wait = runDelayed(400, () -> {
                 wait = null;
-                view.setHomesVisible(false);
-                wait = runDelayed(1200, () -> {
+                if (current < actions.size() - 1) {
+                    current++;
+                    view.setSelectedAction(actions.get(current));
+                    setRunning(false);
+                }
+                wait = runDelayed(1600, () -> {
                     wait = null;
-                    if (current < actions.size() - 1) {
-                        current++;
-                        view.setSelectedAction(actions.get(current));
-                    }
+                    setRunning(true);
                 });
             });
         });
         view.setOnPauseButtonClicked(() -> {
             running = !running;
             setRunning(running);
+        });
+        view.setOnBack(() -> {
+            view.stop();
+            view.setSelectedAction(actions.get(current));
         });
         view.setOnEditButtonClicked(() -> {
             setRunning(false);
