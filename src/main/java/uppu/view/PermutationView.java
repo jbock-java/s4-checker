@@ -214,11 +214,11 @@ public class PermutationView {
                     rotation = rotation.invert();
                 }
                 for (int i = 0; i < 3; i++) {
-                    tl.add(allMovers.get(i).moveCircle(rotation, 3, () -> {
+                    tl.add(allMovers.get(i).moveCircle(rotation, 3, Math.PI * (2f / 3f), () -> {
                         if (count.decrementAndGet() == 0) {
                             runNextAction(actions);
                         }
-                    }, Math.PI * (2f / 3f)));
+                    }));
                 }
                 return;
             }
@@ -233,11 +233,11 @@ public class PermutationView {
                 Point3D axis = a.midPoint().subtract(b.midPoint());
                 Rotation rotation = Rotation.fromAxis(axis);
                 for (Mover mover : allMovers) {
-                    tl.add(mover.moveCircle(rotation, 4.5, () -> {
+                    tl.add(mover.moveCircle(rotation, 4.5, Math.PI, () -> {
                         if (count.decrementAndGet() == 0) {
                             runNextAction(actions);
                         }
-                    }, Math.PI));
+                    }));
                 }
                 return;
             }

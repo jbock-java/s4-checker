@@ -134,8 +134,8 @@ public final class Mover {
     public Timeline moveCircle(
             Rotation rotation,
             double seconds,
-            Runnable onSuccess,
-            double angle) {
+            double angle,
+            Runnable onSuccess) {
 
         if (source().equals(destination())) {
             ball.setLocation(destination().homePoint());
@@ -156,20 +156,31 @@ public final class Mover {
             Rotation rotation,
             double angle,
             double seconds) {
-        int steps = (int) (seconds * 20);
-        double angle_step = angle / steps;
-        float time_step = (float) seconds / steps;
         DoubleProperty x = sphere.translateXProperty();
         DoubleProperty y = sphere.translateYProperty();
         DoubleProperty z = sphere.translateZProperty();
-        KeyFrame[] frames = new KeyFrame[steps + 1];
-        for (int i = 0; i <= steps; i++) {
-            Point3D dd = rotation.apply(source, angle_step * i);
+        double[] angleSteps = angleSteps(angle, seconds);
+        float time_step = (float) seconds / angleSteps.length;
+        KeyFrame[] frames = new KeyFrame[angleSteps.length];
+        for (int i = 0; i < angleSteps.length; i++) {
+            Point3D dd = rotation.apply(source, angleSteps[i]);
             frames[i] = new KeyFrame(Duration.seconds(time_step * i),
                     new KeyValue(x, dd.getX(), Interpolator.LINEAR),
                     new KeyValue(y, dd.getY(), Interpolator.LINEAR),
                     new KeyValue(z, dd.getZ(), Interpolator.LINEAR));
         }
         return frames;
+    }
+
+    private double[] angleSteps(
+            double angle,
+            double seconds) {
+        int steps = (int) (seconds * 20);
+        double angle_step = angle / steps;
+        double[] result = new double[steps + 1];
+        for (int i = 0; i <= steps; i++) {
+            result[i] = (angle_step * i);
+        }
+        return result;
     }
 }
