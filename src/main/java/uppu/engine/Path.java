@@ -23,7 +23,7 @@ public record Path(
         return source == destination;
     }
 
-    public Point3D arrow() {
-        return destination.homePoint().subtract(source.homePoint());
+    public boolean contains(Colour colour) {
+        return source == colour || destination == colour;
     }
 }

@@ -37,7 +37,7 @@ public class S4Checker extends Application {
                     PermutationView view = PermutationView.create(stage);
                     view.init();
                     stage.show();
-                    new Presenter(view, commandLine, actions).run();
+                    new Presenter(view, commandLine.input().toPath(), actions).run();
                 });
     }
 

@@ -19,6 +19,9 @@ dependencies {
     testImplementation('org.apache.commons:commons-math3:3.6.1')
     testImplementation('org.mockito:mockito-core:4.10.0')
     testImplementation('org.junit.jupiter:junit-jupiter:5.9.1')
+    testImplementation('org.openjfx:javafx-base:19')
+    testImplementation('org.openjfx:javafx-graphics:19')
+    testImplementation('org.openjfx:javafx-controls:19')
 }
 
 mainClassName = "uppu.S4Checker"

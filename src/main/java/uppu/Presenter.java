@@ -21,7 +21,7 @@ import static uppu.util.Delay.runDelayed;
 public class Presenter {
 
     private final PermutationView view;
-    private final CommandLine commandLine;
+    private final Path path;
     private boolean running = true;
     private int current = 0;
     private PauseTransition wait;
@@ -29,10 +29,10 @@ public class Presenter {
 
     Presenter(
             PermutationView view,
-            CommandLine commandLine,
+            Path path,
             List<ActionSequence> actions) {
         this.view = view;
-        this.commandLine = commandLine;
+        this.path = path;
         this.actions = actions;
     }
 
@@ -127,9 +127,8 @@ public class Presenter {
     private void writeToFile(List<ActionSequence> newActions) {
         try {
             List<String> lines = newActions.stream().map(ActionSequence::toString).toList();
-            Path p = commandLine.input().toPath();
-            Files.write(p, lines, StandardOpenOption.TRUNCATE_EXISTING);
-            Files.writeString(p, System.lineSeparator(), StandardOpenOption.APPEND);
+            Files.write(path, lines, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.writeString(path, System.lineSeparator(), StandardOpenOption.APPEND);
         } catch (IOException e) {
             Alert alert = new Alert(AlertType.ERROR, e.toString(), ButtonType.OK);
             alert.showAndWait();

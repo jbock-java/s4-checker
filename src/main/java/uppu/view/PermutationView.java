@@ -39,7 +39,6 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -238,15 +237,12 @@ public class PermutationView {
                     .collect(groupingBy(mover -> mover.path().normalize()));
             if (m.size() == 2 && m.values().stream().allMatch(movers -> movers.size() == 2)) {
                 List<List<Mover>> values = List.copyOf(m.values());
-                List<Mover> group0 = values.get(0);
-                List<Mover> group1 = values.get(1);
+                List<Mover> group0 = values.stream().filter(movers -> movers.stream().map(Mover::path).anyMatch(p -> p.contains(Colour.GREEN))).findAny().orElseThrow();
+                List<Mover> group1 = values.stream().filter(movers -> movers.stream().map(Mover::path).noneMatch(p -> p.contains(Colour.GREEN))).findAny().orElseThrow();
                 Mover a = group0.get(0);
                 Mover b = group1.get(0);
                 Point3D axis = a.midPoint().subtract(b.midPoint());
                 Rotation rotation = Rotation.fromAxis(axis);
-                if (ThreadLocalRandom.current().nextBoolean()) {
-                    rotation = rotation.invert();
-                }
                 for (Mover mover : allMovers) {
                     tl.add(mover.moveCircle(rotation, 4.2, Math.PI, () -> {
                         if (count.decrementAndGet() == 0) {
