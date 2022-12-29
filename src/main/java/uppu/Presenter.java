@@ -41,6 +41,9 @@ public class Presenter {
             stop();
             current = actions.indexOf(action);
             view.setSelectedAction(action);
+            if (!running) {
+                setRunning(false);
+            }
         });
         view.setOnAnimationFinished(() -> {
             wait = runDelayed(400, () -> {
@@ -63,6 +66,9 @@ public class Presenter {
         view.setOnBack(() -> {
             view.stop();
             view.setSelectedAction(actions.get(current));
+            if (!running) {
+                setRunning(false);
+            }
         });
         view.setOnEditButtonClicked(() -> {
             setRunning(false);
@@ -106,6 +112,7 @@ public class Presenter {
     }
 
     private void setRunning(boolean running) {
+        this.running = running;
         view.setRunning(running);
         if (wait != null && running) {
             wait.play();

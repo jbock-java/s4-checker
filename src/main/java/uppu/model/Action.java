@@ -10,10 +10,6 @@ public sealed interface Action permits Action.MoveAction, Action.WaitAction {
         public List<Mover> nonZeroMovers() {
             return movers.stream().filter(m -> !m.path().isZero()).toList();
         }
-
-        public List<Mover> zeroMovers() {
-            return movers.stream().filter(m -> m.path().isZero()).toList();
-        }
     }
 
     record WaitAction(int millis) implements Action {

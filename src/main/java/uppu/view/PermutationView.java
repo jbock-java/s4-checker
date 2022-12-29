@@ -203,9 +203,8 @@ public class PermutationView {
             wait.play();
         }
         if (action instanceof Action.MoveAction) {
-            List<Mover> zero = ((Action.MoveAction) action).zeroMovers();
-            for (Mover m : zero) {
-                m.ball().setLocation(m.path().destination().homePoint());
+            for (Mover m : ((Action.MoveAction) action).movers()) {
+                m.ball().setLocation(m.path().source().homePoint());
             }
             List<Mover> allMovers = ((Action.MoveAction) action).nonZeroMovers();
             if (allMovers.isEmpty()) {
