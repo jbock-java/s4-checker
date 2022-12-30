@@ -26,6 +26,7 @@ dependencies {
 
 application {
     mainClass = 'uppu.S4Checker'
+    mainModule = 'uppufx'
 }
 
 configurations {
