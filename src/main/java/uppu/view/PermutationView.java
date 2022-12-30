@@ -31,13 +31,11 @@ import uppu.model.ActionSequence;
 import uppu.model.Colour;
 import uppu.model.Rotation;
 
-import java.net.URL;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -98,8 +96,7 @@ public class PermutationView {
                 stage.close();
             }
         });
-        URL style = Objects.requireNonNull(getClass().getResource("/uppu/css/style.css"));
-        scene.getStylesheets().add(style.toExternalForm());
+        scene.getStylesheets().add("data:text/css;base64," + DarkStyle.getBase64());
         stage.setScene(scene);
     }
 

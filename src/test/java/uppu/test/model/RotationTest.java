@@ -1,7 +1,9 @@
-package uppu.model;
+package uppu.test.model;
 
 import javafx.geometry.Point3D;
 import org.junit.jupiter.api.Test;
+import uppu.model.HomePoints;
+import uppu.model.Rotation;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

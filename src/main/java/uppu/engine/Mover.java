@@ -18,7 +18,7 @@ import static java.lang.System.arraycopy;
 
 public final class Mover {
 
-    static final int ACC_FRAMES = 30;
+    public static final int ACC_FRAMES = 30;
 
     private final Path path;
     private final Point3D source;
@@ -186,7 +186,7 @@ public final class Mover {
         return frames;
     }
 
-    static double[] smoothInterval(
+    public static double[] smoothInterval(
             double length,
             double seconds) {
         double topSpeed = length / (seconds * 20);

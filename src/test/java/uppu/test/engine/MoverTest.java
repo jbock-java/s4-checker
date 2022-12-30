@@ -1,6 +1,7 @@
-package uppu.engine;
+package uppu.test.engine;
 
 import org.junit.jupiter.api.Test;
+import uppu.engine.Mover;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uppu.engine.Mover.ACC_FRAMES;

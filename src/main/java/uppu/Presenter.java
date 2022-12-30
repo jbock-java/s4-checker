@@ -27,7 +27,7 @@ public class Presenter {
     private PauseTransition wait;
     private List<ActionSequence> actions;
 
-    Presenter(
+    public Presenter(
             PermutationView view,
             Path path,
             List<ActionSequence> actions) {
