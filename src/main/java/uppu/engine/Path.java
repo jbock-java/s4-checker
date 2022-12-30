@@ -8,11 +8,8 @@ public record Path(
         Colour destination // to which color-home
 ) {
 
-    public Path normalize() {
-        if (source.ordinal() <= destination.ordinal()) {
-            return this;
-        }
-        return new Path(destination, source);
+    public Colour lower() {
+        return source.ordinal() < destination.ordinal() ? source : destination;
     }
 
     public Point3D midPoint() {

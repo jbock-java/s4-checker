@@ -1,30 +1,32 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 plugins {
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.0.9'
+}
+
+private static def javafxVersion() {
+    return '19';
 }
 
 repositories {
     mavenCentral()
 }
 
-javafx {
-    version = "19"
-    modules = ['javafx.controls']
-}
-
 dependencies {
+    implementation group: 'org.openjfx', name: 'javafx-base', version: javafxVersion(), classifier: osClassifier()
+    implementation group: 'org.openjfx', name: 'javafx-graphics', version: javafxVersion(), classifier: osClassifier()
+    implementation group: 'org.openjfx', name: 'javafx-controls', version: javafxVersion(), classifier: osClassifier()
     implementation('io.github.jbock-java:parmigiano:1.02')
     implementation('io.github.jbock-java:jbock:5.14')
     annotationProcessor('io.github.jbock-java:jbock-compiler:5.14')
     testImplementation('org.apache.commons:commons-math3:3.6.1')
     testImplementation('org.mockito:mockito-core:4.10.0')
     testImplementation('org.junit.jupiter:junit-jupiter:5.9.1')
-    testImplementation('org.openjfx:javafx-base:19')
-    testImplementation('org.openjfx:javafx-graphics:19')
-    testImplementation('org.openjfx:javafx-controls:19')
 }
 
-mainClassName = "uppu.S4Checker"
+application {
+    mainClass = 'uppu.S4Checker'
+}
 
 configurations {
     testCompile
@@ -35,4 +37,17 @@ test {
     testLogging {
         events('failed')
     }
+}
+
+private static def osClassifier() {
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        return 'win'
+    }
+    if (Os.isFamily(Os.FAMILY_MAC)) {
+        return 'mac'
+    }
+    if (Os.isFamily(Os.FAMILY_UNIX)) {
+        return 'linux'
+    }
+    throw new IllegalStateException('unknown OS');
 }

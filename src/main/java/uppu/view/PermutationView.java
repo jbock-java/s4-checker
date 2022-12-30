@@ -26,7 +26,6 @@ import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import uppu.engine.Mover;
-import uppu.engine.Path;
 import uppu.model.Action;
 import uppu.model.ActionSequence;
 import uppu.model.Colour;
@@ -232,8 +231,8 @@ public class PermutationView {
                 }
                 return;
             }
-            Map<Path, List<Mover>> m = allMovers.stream()
-                    .collect(groupingBy(mover -> mover.path().normalize()));
+            Map<?, List<Mover>> m = allMovers.stream()
+                    .collect(groupingBy(mover -> mover.path().lower()));
             if (m.size() == 2 && m.values().stream().allMatch(movers -> movers.size() == 2)) {
                 List<List<Mover>> values = List.copyOf(m.values());
                 List<Mover> group0 = values.stream().filter(movers -> movers.stream().map(Mover::path).anyMatch(p -> p.contains(Colour.GREEN))).findAny().orElseThrow();
