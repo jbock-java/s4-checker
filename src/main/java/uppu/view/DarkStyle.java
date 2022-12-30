@@ -88,6 +88,7 @@ class DarkStyle {
 .text-area .content{
     -fx-background-color: #404040;
     background-color: #404040;
+}
             """;
 
     private static final Supplier<String> CSS_SUPPLIER = Suppliers.memoize(() -> {
