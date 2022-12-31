@@ -51,6 +51,10 @@ public class CommandSequence {
         return title;
     }
 
+    public CommandSequence title(String newTitle) {
+        return new CommandSequence(newTitle, commands);
+    }
+
     @Override
     public String toString() {
         return title;

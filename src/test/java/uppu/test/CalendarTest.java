@@ -25,24 +25,25 @@ public class CalendarTest extends Application {
 
     enum Month {
 
-        JANUARY(Permutation.identity()),
-        FEBRUARY(cycle(0, 1, 2)),
-        MARCH(cycle(0, 2, 1)),
+        JANUARY(Permutation.identity(), "Январь"),
+        FEBRUARY(cycle(0, 1, 2), "Февраль"),
+        MARCH(cycle(0, 2, 1), "Март"),
 
-        APRIL(cycle(0, 2).compose(1, 3)),
-        MAY(cycle(0, 3, 1)),
-        JUNE(cycle(1, 2, 3)),
+        APRIL(cycle(0, 2).compose(1, 3), "Апрель"),
+        MAY(cycle(0, 3, 1), "Май"),
+        JUNE(cycle(1, 2, 3), "Июнь"),
 
-        JULY(cycle(0, 1).compose(2, 3)),
-        AUGUST(cycle(1, 3, 2)),
-        SEPTEMBER(cycle(0, 3, 2)),
+        JULY(cycle(0, 1).compose(2, 3), "Июль"),
+        AUGUST(cycle(1, 3, 2), "Август"),
+        SEPTEMBER(cycle(0, 3, 2), "Сентябрь"),
 
-        OCTOBER(cycle(0, 3).compose(1, 2)),
-        NOVEMBER(cycle(0, 2, 3)),
-        DECEMBER(cycle(0, 1, 3)),
+        OCTOBER(cycle(0, 3).compose(1, 2), "Октябрь"),
+        NOVEMBER(cycle(0, 2, 3), "Ноябрь"),
+        DECEMBER(cycle(0, 1, 3), "Декабрь"),
         ;
 
         final Permutation p;
+        final String title;
 
         static final Supplier<Map<Permutation, Month>> MAP = Suppliers.memoize(() -> {
             Map<Permutation, Month> monthMap = new HashMap<>();
@@ -56,8 +57,9 @@ public class CalendarTest extends Application {
             return MAP.get().get(p);
         }
 
-        Month(Permutation p) {
+        Month(Permutation p, String title) {
             this.p = p;
+            this.title = title;
         }
     }
 
@@ -81,9 +83,8 @@ public class CalendarTest extends Application {
         }
         List<CommandSequence> result = new ArrayList<>();
         for (List<Permutation> p : permutations) {
-            System.out.println(Month.get(current));
             CommandSequence.Result r = CommandSequence.toSequence(new Row.ExplicitRow(p), current);
-            result.add(r.sequence());
+            result.add(r.sequence().title(Month.get(current).title));
             current = r.permutation().compose(current);
         }
         PermutationView view = PermutationView.create(stage);

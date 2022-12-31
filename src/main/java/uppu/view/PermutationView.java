@@ -172,6 +172,7 @@ public class PermutationView {
         actions.getSelectionModel().select(actionSequence);
         actions.getSelectionModel().selectedItemProperty().addListener(changeListener);
         runNextAction(new ArrayDeque<>(actionSequence.actions()));
+        stage.setTitle(actionSequence.title());
     }
 
     private void runNextAction(Deque<Action> actions) {

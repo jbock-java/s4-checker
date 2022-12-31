@@ -10,10 +10,6 @@ import uppu.model.State;
 import uppu.view.InputView;
 import uppu.view.PermutationView;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -51,9 +47,11 @@ public class Presenter {
                 wait = null;
                 if (current < actions.size() - 1) {
                     current++;
-                    view.setSelectedAction(actions.get(current));
-                    setRunning(false);
+                } else {
+                    current = 0;
                 }
+                view.setSelectedAction(actions.get(current));
+                setRunning(false);
                 wait = runDelayed(1600, () -> {
                     wait = null;
                     setRunning(true);
