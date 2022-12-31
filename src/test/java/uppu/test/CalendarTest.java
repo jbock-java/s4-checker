@@ -20,6 +20,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static io.parmigiano.Permutation.cycle;
+import static java.util.Objects.requireNonNull;
+import static uppu.test.CalendarTest.Month.monthOf;
 
 public class CalendarTest extends Application {
 
@@ -53,8 +55,8 @@ public class CalendarTest extends Application {
             return monthMap;
         });
 
-        static Month get(Permutation p) {
-            return MAP.get().get(p);
+        static Month monthOf(Permutation p) {
+            return requireNonNull(MAP.get().get(p));
         }
 
         Month(Permutation p, String title) {
@@ -70,21 +72,21 @@ public class CalendarTest extends Application {
         for (int i = 0; i < 1; i++) {
             permutations.add(List.of(cycle(0, 1, 2)));
             permutations.add(List.of(cycle(0, 1, 2)));
-            permutations.add(List.of(cycle(3, 1).compose(0, 2), cycle(0, 1, 2)));
+            permutations.add(List.of(klein(2), cycle(0, 1, 2)));
             permutations.add(List.of(cycle(0, 2, 3)));
             permutations.add(List.of(cycle(0, 2, 3)));
-            permutations.add(List.of(cycle(0, 3).compose(1, 2), cycle(0, 2, 3)));
+            permutations.add(List.of(klein(3), cycle(0, 2, 3)));
             permutations.add(List.of(cycle(0, 3, 1)));
             permutations.add(List.of(cycle(0, 3, 1)));
-            permutations.add(List.of(cycle(0, 2).compose(3, 1), cycle(0, 3, 1)));
+            permutations.add(List.of(klein(2), cycle(0, 3, 1)));
             permutations.add(List.of(cycle(1, 3, 2)));
             permutations.add(List.of(cycle(1, 3, 2)));
-            permutations.add(List.of(cycle(3, 0).compose(1, 2), cycle(1, 3, 2)));
+            permutations.add(List.of(klein(3), cycle(1, 3, 2)));
         }
         List<CommandSequence> result = new ArrayList<>();
         for (List<Permutation> p : permutations) {
             CommandSequence.Result r = CommandSequence.toSequence(new Row.ExplicitRow(p), current);
-            result.add(r.sequence().title(Month.get(current).title));
+            result.add(r.sequence().title(monthOf(current).title));
             current = r.permutation().compose(current);
         }
         PermutationView view = PermutationView.create(stage);
@@ -92,6 +94,23 @@ public class CalendarTest extends Application {
         stage.show();
         Consumer<List<ActionSequence>> onSave = MyTest::onSave;
         new Presenter(view, onSave, State.create().getActions(result)).run();
+    }
+
+    static Permutation klein(int j) {
+        int k = -1;
+        int l = -1;
+        for (int m = 1; m < 4; m++) {
+            if (m != j) {
+                if (k == -1) {
+                    k = m;
+                } else if (l == -1) {
+                    l = m;
+                } else {
+                    throw new IllegalArgumentException("j=" + j);
+                }
+            }
+        }
+        return cycle(0, j).compose(k, l);
     }
 
     @Test
