@@ -15,13 +15,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static uppu.util.Delay.runDelayed;
 
 public class Presenter {
 
     private final PermutationView view;
-    private final Path path;
+    private final Consumer<List<ActionSequence>> onSave;
     private boolean running = true;
     private int current = 0;
     private PauseTransition wait;
@@ -29,10 +30,10 @@ public class Presenter {
 
     public Presenter(
             PermutationView view,
-            Path path,
+            Consumer<List<ActionSequence>> onSave,
             List<ActionSequence> actions) {
         this.view = view;
-        this.path = path;
+        this.onSave = onSave;
         this.actions = actions;
     }
 
@@ -87,7 +88,7 @@ public class Presenter {
                             stop();
                             actions = State.create().getActions(newCommands);
                             view.setActions(actions);
-                            writeToFile(actions);
+                            onSave.accept(actions);
                             actions.stream().findFirst().ifPresent(view::setSelectedAction);
                             if (!actions.isEmpty()) {
                                 current = 0;
@@ -129,16 +130,5 @@ public class Presenter {
         }
         view.stop();
         view.setHomesVisible(false);
-    }
-
-    private void writeToFile(List<ActionSequence> newActions) {
-        try {
-            List<String> lines = newActions.stream().map(ActionSequence::toString).toList();
-            Files.write(path, lines, StandardOpenOption.TRUNCATE_EXISTING);
-            Files.writeString(path, System.lineSeparator(), StandardOpenOption.APPEND);
-        } catch (IOException e) {
-            Alert alert = new Alert(AlertType.ERROR, e.toString(), ButtonType.OK);
-            alert.showAndWait();
-        }
     }
 }

@@ -15,8 +15,11 @@ import uppu.view.PermutationView;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static io.jbock.util.Either.right;
 
@@ -37,7 +40,9 @@ public class S4Checker extends Application {
                     PermutationView view = PermutationView.create(stage);
                     view.init();
                     stage.show();
-                    new Presenter(view, commandLine.input().toPath(), actions).run();
+                    Consumer<List<ActionSequence>> onSave = newActions ->
+                            writeToFile(commandLine.input().toPath(), actions);
+                    new Presenter(view, onSave, actions).run();
                 });
     }
 
@@ -62,5 +67,16 @@ public class S4Checker extends Application {
             current = r.permutation().compose(current);
         }
         return right(result);
+    }
+
+    private void writeToFile(Path path, List<ActionSequence> newActions) {
+        try {
+            List<String> lines = newActions.stream().map(ActionSequence::toString).toList();
+            Files.write(path, lines, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.writeString(path, System.lineSeparator(), StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, e.toString(), ButtonType.OK);
+            alert.showAndWait();
+        }
     }
 }

@@ -41,7 +41,6 @@ class DarkStyle {
     background-color: #0045e2;
 }
 
-/* ListView */
 .list-view {
     -fx-background-radius: 0;
     -fx-background-color: #404040;
@@ -50,14 +49,6 @@ class DarkStyle {
     border-width: 1;
     -fx-padding: 1;
     padding: 1;
-}
-
-.list-view .scroll-bar {
-    -fx-background-insets: 0 -1 0 0;
-}
-
-.list-view .scroll-bar .thumb{
-    -fx-background-insets: 0 3 0 2;
 }
 
 .list-view:hover {
@@ -89,7 +80,58 @@ class DarkStyle {
     -fx-background-color: #404040;
     background-color: #404040;
 }
-            """;
+
+.scroll-bar:horizontal .track,
+.scroll-bar:vertical .track{
+    -fx-background-color :transparent;
+    -fx-border-color :transparent;
+    -fx-background-radius : 0.0em;
+    -fx-border-radius :2.0em;
+}
+
+
+.scroll-bar:horizontal .increment-button ,
+.scroll-bar:horizontal .decrement-button {
+    -fx-background-color :transparent;
+    -fx-background-radius : 0.0em;
+    -fx-padding :0.0 0.0 10.0 0.0;
+
+}
+
+.scroll-bar:vertical .increment-button ,
+.scroll-bar:vertical .decrement-button {
+    -fx-background-color :transparent;
+    -fx-background-radius : 0.0em;
+    -fx-padding :0.0 10.0 0.0 0.0;
+
+}
+
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow{
+    -fx-shape : " ";
+    -fx-padding :0.15em 0.0;
+}
+
+.scroll-bar:vertical .increment-arrow,
+.scroll-bar:vertical .decrement-arrow{
+    -fx-shape : " ";
+    -fx-padding :0.0 0.15em;
+}
+
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color :derive(black,90.0%);
+    -fx-background-insets : 2.0, 0.0, 0.0;
+    -fx-background-radius : 2.0em;
+}
+
+.scroll-bar:horizontal .thumb:hover,
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color :derive(#4D4C4F,10.0%);
+    -fx-background-insets : 2.0, 0.0, 0.0;
+    -fx-background-radius : 2.0em;
+}
+""";
 
     private static final Supplier<String> CSS_SUPPLIER = Suppliers.memoize(() -> {
         byte[] cssBytes = CSS.getBytes(StandardCharsets.UTF_8);

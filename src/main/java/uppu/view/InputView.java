@@ -49,9 +49,8 @@ public class InputView {
         buttonPanel.setAlignment(Pos.BASELINE_CENTER);
         buttonPanel.add(saveButton, 0, 0);
         borderPane.setBottom(buttonPanel);
-        URL style = Objects.requireNonNull(getClass().getResource("/uppu/css/style.css"));
         Scene scene = new Scene(borderPane, PermutationView.WIDTH_PANEL * 2, HEIGHT_TEXTAREA);
-        scene.getStylesheets().add(style.toExternalForm());
+        scene.getStylesheets().add("data:text/css;base64," + DarkStyle.getBase64());
         textArea.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
                 onCancel.run();
