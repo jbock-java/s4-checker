@@ -9,4 +9,5 @@ open module uppufx {
     exports uppu.parse;
     exports uppu.engine;
     exports uppu.view;
+    exports uppu.util;
 }
