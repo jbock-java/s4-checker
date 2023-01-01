@@ -25,21 +25,21 @@ import static uppu.test.CalendarTest.Month.monthOf;
 public class CalendarTest extends Application {
 
     enum Month {
-        JANUARY(cycle(0, 1, 2), "Январь"),
-        FEBRUARY(cycle(0, 2, 1), "Февраль"),
-        MARCH(cycle(0, 2).compose(1, 3), "Март"),
+        JANUARY(cycle(0, 1, 2), "01 Январь"),
+        FEBRUARY(cycle(0, 2, 1), "02 Февраль"),
+        MARCH(cycle(0, 2).compose(1, 3), "03 Март"),
 
-        APRIL(cycle(0, 3, 1), "Апрель"),
-        MAY(cycle(1, 2, 3), "Май"),
-        JUNE(cycle(0, 1).compose(2, 3), "Июнь"),
+        APRIL(cycle(0, 3, 1), "04 Апрель"),
+        MAY(cycle(1, 2, 3), "05 Май"),
+        JUNE(cycle(0, 1).compose(2, 3), "06 Июнь"),
 
-        JULY(cycle(1, 3, 2), "Июль"),
-        AUGUST(cycle(0, 3, 2), "Август"),
-        SEPTEMBER(cycle(0, 3).compose(1, 2), "Сентябрь"),
+        JULY(cycle(1, 3, 2), "07 Июль"),
+        AUGUST(cycle(0, 3, 2), "08 Август"),
+        SEPTEMBER(cycle(0, 3).compose(1, 2), "09 Сентябрь"),
 
-        OCTOBER(cycle(0, 2, 3), "Октябрь"),
-        NOVEMBER(cycle(0, 1, 3), "Ноябрь"),
-        DECEMBER(Permutation.identity(), "Декабрь"),
+        OCTOBER(cycle(0, 2, 3), "10 Октябрь"),
+        NOVEMBER(cycle(0, 1, 3), "11 Ноябрь"),
+        DECEMBER(Permutation.identity(), "12 Декабрь"),
         ;
 
         private final Permutation p;
@@ -57,6 +57,10 @@ public class CalendarTest extends Application {
             return requireNonNull(MAP.get().get(p));
         }
 
+        Permutation permutation() {
+            return p;
+        }
+
         String title() {
             return title + " " + p.toString();
         }
@@ -70,20 +74,24 @@ public class CalendarTest extends Application {
     @Override
     public void start(Stage stage) {
         List<List<Permutation>> permutations = new ArrayList<>();
-        for (int i = 0; i < 1; i++) {
-            permutations.add(List.of(cycle(0, 1, 2)));
-            permutations.add(List.of(cycle(0, 1, 2)));
-            permutations.add(List.of(klein(2), cycle(0, 1, 2)));
-            permutations.add(List.of(cycle(0, 2, 3)));
-            permutations.add(List.of(cycle(0, 2, 3)));
-            permutations.add(List.of(klein(3), cycle(0, 2, 3)));
-            permutations.add(List.of(cycle(0, 3, 1)));
-            permutations.add(List.of(cycle(0, 3, 1)));
-            permutations.add(List.of(klein(2), cycle(0, 3, 1)));
-            permutations.add(List.of(cycle(1, 3, 2)));
-            permutations.add(List.of(cycle(1, 3, 2)));
-            permutations.add(List.of(klein(3), cycle(1, 3, 2)));
-        }
+        permutations.add(List.of(cycle(0, 1, 2)));
+        permutations.add(List.of(cycle(0, 1, 2)));
+        permutations.add(List.of(klein(2), cycle(0, 1, 2)));
+        permutations.add(List.of(cycle(0, 2, 3)));
+        permutations.add(List.of(cycle(0, 2, 3)));
+        permutations.add(List.of(klein(3), cycle(0, 2, 3)));
+        permutations.add(List.of(cycle(0, 3, 1)));
+        permutations.add(List.of(cycle(0, 3, 1)));
+        permutations.add(List.of(klein(2), cycle(0, 3, 1)));
+        permutations.add(List.of(cycle(1, 3, 2)));
+        permutations.add(List.of(cycle(1, 3, 2)));
+        permutations.add(List.of(klein(3), cycle(1, 3, 2)));
+        run(stage, permutations);
+    }
+
+    static void run(
+            Stage stage,
+            List<List<Permutation>> permutations) {
         List<CommandSequence> result = State.create().getCommands(permutations.stream().map(Row::explicitRow).toList()).stream()
                 .map(r -> r.sequence().title(monthOf(r.permutation()).title())).toList();
         PermutationView view = PermutationView.create(stage);

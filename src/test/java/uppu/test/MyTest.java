@@ -8,16 +8,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
-import uppu.Presenter;
-import uppu.model.ActionSequence;
 import uppu.model.CommandSequence;
-import uppu.model.State;
-import uppu.parse.Row;
-import uppu.view.PermutationView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static io.parmigiano.Permutation.cycle;
@@ -26,25 +20,32 @@ public class MyTest extends Application {
 
     @Override
     public void start(Stage stage) {
-        Permutation current = Permutation.identity();
-        List<Permutation> permutations1 = List.of(
-                cycle(0, 1).compose(2, 3), cycle(0, 1));
-        List<Permutation> permutations2 = List.of(
-                cycle(0, 1).compose(2, 3), cycle(0, 3));
-        List<CommandSequence> result = new ArrayList<>();
-        for (List<Permutation> permutations : List.of(permutations1, permutations2)) {
-            CommandSequence.Result r = CommandSequence.toSequence(new Row.ExplicitRow(permutations), current);
-            result.add(r.sequence());
-            current = r.permutation().compose(current);
-            r = CommandSequence.toSequence(Row.HOME_ROW, current);
-            result.add(r.sequence());
-            current = r.permutation().compose(current);
-        }
-        PermutationView view = PermutationView.create(stage);
-        view.init();
-        stage.show();
-        Consumer<List<CommandSequence>> onSave = MyTest::onSave;
-        new Presenter(view, onSave, State.create().getActions(result)).run();
+        List<List<Permutation>> permutations = new ArrayList<>();
+        Permutation p = cycle(0, 1, 2);
+        Permutation q = cycle(0, 1, 3);
+        Permutation qq = q.compose(q);
+        
+        Permutation march = p.compose(q);
+        Permutation june = p.compose(qq).compose(p);
+
+        List<Permutation> january = List.of(june, qq, june);
+        List<Permutation> april = List.of(june, p, june);
+        List<Permutation> october = List.of(march, p, march);
+        List<Permutation> july = List.of(march, qq, march);
+
+        permutations.add(january);
+        permutations.add(january);
+        permutations.add(april);
+        permutations.add(october);
+        permutations.add(october);
+        permutations.add(january);
+        permutations.add(april);
+        permutations.add(april);
+        permutations.add(january);
+        permutations.add(july);
+        permutations.add(july);
+        permutations.add(april);
+        CalendarTest.run(stage, permutations);
     }
 
     @Test

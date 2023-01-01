@@ -10,7 +10,7 @@ class DarkStyle {
 
     private static final String CSS = """
 .list-cell {
-    -fx-font: 18px Monospace;
+    -fx-font: 20px Monospace;
     -fx-font-weight: bold;
     -fx-background-radius: 0;
     -fx-border-width: 0;
@@ -18,8 +18,8 @@ class DarkStyle {
     -fx-text-fill: #FFFFFF;
     -fx-background-color: #404040;
     background-color: #404040;
-    -fx-min-height: 24;
-    min-height: 24;
+    -fx-min-height: 30;
+    min-height: 30;
     -fx-padding: 0 0 0 3;
     padding: 0 0 0 3;
 }
@@ -70,7 +70,7 @@ class DarkStyle {
 }
 
 .text-area {
-    -fx-font: 18px Monospace;
+    -fx-font: 20px Monospace;
     -fx-font-weight: bold;
     -fx-text-fill: #FFFFFF;
     -fx-display-caret: true;
