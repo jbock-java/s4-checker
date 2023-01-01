@@ -20,7 +20,7 @@ import static uppu.test.CalendarTest.Month.monthOf;
 import static uppu.test.CalendarTest.klein;
 
 public class MayaCalendarTest extends Application {
-    
+
     @Override
     public void start(Stage stage) {
         Permutation current = Permutation.identity();
@@ -42,8 +42,8 @@ public class MayaCalendarTest extends Application {
         List<CommandSequence> result = new ArrayList<>();
         for (List<Permutation> p : permutations) {
             CommandSequence.Result r = CommandSequence.toSequence(new Row.ExplicitRow(p), current);
-            result.add(r.sequence().title(monthOf(current).title));
             current = r.permutation().compose(current);
+            result.add(r.sequence().title(monthOf(current).title()));
         }
         PermutationView view = PermutationView.create(stage);
         view.init();

@@ -26,26 +26,25 @@ import static uppu.test.CalendarTest.Month.monthOf;
 public class CalendarTest extends Application {
 
     enum Month {
+        JANUARY(cycle(0, 1, 2), "Январь"),
+        FEBRUARY(cycle(0, 2, 1), "Февраль"),
+        MARCH(cycle(0, 2).compose(1, 3), "Март"),
 
-        JANUARY(Permutation.identity(), "Январь"),
-        FEBRUARY(cycle(0, 1, 2), "Февраль"),
-        MARCH(cycle(0, 2, 1), "Март"),
+        APRIL(cycle(0, 3, 1), "Апрель"),
+        MAY(cycle(1, 2, 3), "Май"),
+        JUNE(cycle(0, 1).compose(2, 3), "Июнь"),
 
-        APRIL(cycle(0, 2).compose(1, 3), "Апрель"),
-        MAY(cycle(0, 3, 1), "Май"),
-        JUNE(cycle(1, 2, 3), "Июнь"),
+        JULY(cycle(1, 3, 2), "Июль"),
+        AUGUST(cycle(0, 3, 2), "Август"),
+        SEPTEMBER(cycle(0, 3).compose(1, 2), "Сентябрь"),
 
-        JULY(cycle(0, 1).compose(2, 3), "Июль"),
-        AUGUST(cycle(1, 3, 2), "Август"),
-        SEPTEMBER(cycle(0, 3, 2), "Сентябрь"),
-
-        OCTOBER(cycle(0, 3).compose(1, 2), "Октябрь"),
-        NOVEMBER(cycle(0, 2, 3), "Ноябрь"),
-        DECEMBER(cycle(0, 1, 3), "Декабрь"),
+        OCTOBER(cycle(0, 2, 3), "Октябрь"),
+        NOVEMBER(cycle(0, 1, 3), "Ноябрь"),
+        DECEMBER(Permutation.identity(), "Декабрь"),
         ;
 
-        final Permutation p;
-        final String title;
+        private final Permutation p;
+        private final String title;
 
         static final Supplier<Map<Permutation, Month>> MAP = Suppliers.memoize(() -> {
             Map<Permutation, Month> monthMap = new HashMap<>();
@@ -57,6 +56,10 @@ public class CalendarTest extends Application {
 
         static Month monthOf(Permutation p) {
             return requireNonNull(MAP.get().get(p));
+        }
+
+        String title() {
+            return title + " " + p.toString();
         }
 
         Month(Permutation p, String title) {
@@ -86,8 +89,8 @@ public class CalendarTest extends Application {
         List<CommandSequence> result = new ArrayList<>();
         for (List<Permutation> p : permutations) {
             CommandSequence.Result r = CommandSequence.toSequence(new Row.ExplicitRow(p), current);
-            result.add(r.sequence().title(monthOf(current).title));
             current = r.permutation().compose(current);
+            result.add(r.sequence().title(monthOf(current).title()));
         }
         PermutationView view = PermutationView.create(stage);
         view.init();
