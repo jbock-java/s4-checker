@@ -49,7 +49,7 @@ public class PresenterTest extends Application {
         PermutationView view = PermutationView.create(stage);
         view.init();
         stage.show();
-        Consumer<List<CommandSequence>> onSave = MyTest::onSave;
+        Consumer<List<CommandSequence>> onSave = CalendarTest::onSave;
         new Presenter(view, onSave, State.create().getActions(result)).run();
     }
 

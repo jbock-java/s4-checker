@@ -2,6 +2,10 @@ package uppu.test;
 
 import io.parmigiano.Permutation;
 import javafx.application.Application;
+import javafx.scene.control.Alert;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import uppu.Presenter;
@@ -17,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static io.parmigiano.Permutation.cycle;
 import static java.util.Objects.requireNonNull;
@@ -57,6 +62,7 @@ public class CalendarTest extends Application {
             return requireNonNull(MAP.get().get(p));
         }
 
+        @SuppressWarnings("unused")
         Permutation permutation() {
             return p;
         }
@@ -97,7 +103,7 @@ public class CalendarTest extends Application {
         PermutationView view = PermutationView.create(stage);
         view.init();
         stage.show();
-        Consumer<List<CommandSequence>> onSave = MyTest::onSave;
+        Consumer<List<CommandSequence>> onSave = CalendarTest::onSave;
         Presenter.create(view, onSave, result).run();
     }
 
@@ -125,5 +131,28 @@ public class CalendarTest extends Application {
             return;
         }
         launch(new String[0]);
+    }
+
+    static void onSave(List<CommandSequence> newActions) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Saving disabled");
+        alert.setHeaderText("Saving disabled");
+        alert.setContentText("Saving disabled, please copy this manually:");
+        TextArea textArea = new TextArea(newActions.stream()
+                .map(CommandSequence::toString)
+                .collect(Collectors.joining(System.lineSeparator())));
+        textArea.setEditable(false);
+
+        textArea.setMaxWidth(Double.MAX_VALUE);
+        textArea.setMaxHeight(Double.MAX_VALUE);
+        GridPane.setVgrow(textArea, Priority.ALWAYS);
+        GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+        GridPane expContent = new GridPane();
+        expContent.setMaxWidth(Double.MAX_VALUE);
+        expContent.add(textArea, 0, 0);
+
+        alert.getDialogPane().setExpandableContent(expContent);
+        alert.showAndWait();
     }
 }
