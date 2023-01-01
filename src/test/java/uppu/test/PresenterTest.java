@@ -5,7 +5,6 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import uppu.Presenter;
-import uppu.model.ActionSequence;
 import uppu.model.CommandSequence;
 import uppu.model.State;
 import uppu.parse.Row;
@@ -50,7 +49,7 @@ public class PresenterTest extends Application {
         PermutationView view = PermutationView.create(stage);
         view.init();
         stage.show();
-        Consumer<List<ActionSequence>> onSave = MyTest::onSave;
+        Consumer<List<CommandSequence>> onSave = MyTest::onSave;
         new Presenter(view, onSave, State.create().getActions(result)).run();
     }
 

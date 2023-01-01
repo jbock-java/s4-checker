@@ -1,27 +1,23 @@
 package uppu;
 
 import io.jbock.util.Either;
-import io.parmigiano.Permutation;
 import javafx.application.Application;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
-import uppu.model.ActionSequence;
 import uppu.model.CommandSequence;
 import uppu.model.State;
 import uppu.parse.LineParser;
-import uppu.parse.Row;
 import uppu.view.PermutationView;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static io.jbock.util.Either.right;
+import static io.jbock.util.Eithers.firstFailure;
 
 public class S4Checker extends Application {
 
@@ -36,13 +32,12 @@ public class S4Checker extends Application {
                     alert.showAndWait();
                 },
                 sequences -> {
-                    List<ActionSequence> actions = State.create().getActions(sequences);
                     PermutationView view = PermutationView.create(stage);
                     view.init();
                     stage.show();
-                    Consumer<List<ActionSequence>> onSave = newActions ->
-                            writeToFile(commandLine.input().toPath(), actions);
-                    new Presenter(view, onSave, actions).run();
+                    Consumer<List<CommandSequence>> onSave = newActions ->
+                            writeToFile(commandLine.input().toPath(), newActions);
+                    Presenter.create(view, onSave, sequences).run();
                 });
     }
 
@@ -51,29 +46,17 @@ public class S4Checker extends Application {
     }
 
     static Either<String, List<CommandSequence>> readLines(List<String> lines) {
-        Permutation current = Permutation.identity();
-        List<CommandSequence> result = new ArrayList<>(lines.size());
-        for (String line : lines) {
-            Either<String, Row> parsed = LineParser.parse(line);
-            if (parsed.isLeft()) {
-                return parsed.map(x -> List.of());
-            }
-            Row row = parsed.getRight().orElseThrow();
-            if (row.permutations(current).isEmpty()) {
-                continue;
-            }
-            CommandSequence.Result r = CommandSequence.toSequence(row, current);
-            result.add(r.sequence());
-            current = r.permutation().compose(current);
-        }
-        return right(result);
+        return lines.stream().map(LineParser::parse).collect(firstFailure())
+                .map(rows -> State.create().getCommands(rows).stream()
+                        .map(CommandSequence.Result::sequence)
+                        .toList());
     }
 
-    private void writeToFile(Path path, List<ActionSequence> newActions) {
+
+    private void writeToFile(Path path, List<CommandSequence> newActions) {
         try {
-            List<String> lines = newActions.stream().map(ActionSequence::toString).toList();
+            List<String> lines = newActions.stream().map(CommandSequence::toString).toList();
             Files.write(path, lines, StandardOpenOption.TRUNCATE_EXISTING);
-            Files.writeString(path, System.lineSeparator(), StandardOpenOption.APPEND);
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, e.toString(), ButtonType.OK);
             alert.showAndWait();

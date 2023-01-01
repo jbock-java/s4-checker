@@ -43,7 +43,7 @@ public class MyTest extends Application {
         PermutationView view = PermutationView.create(stage);
         view.init();
         stage.show();
-        Consumer<List<ActionSequence>> onSave = MyTest::onSave;
+        Consumer<List<CommandSequence>> onSave = MyTest::onSave;
         new Presenter(view, onSave, State.create().getActions(result)).run();
     }
 
@@ -56,13 +56,13 @@ public class MyTest extends Application {
         launch(new String[0]);
     }
 
-    static void onSave(List<ActionSequence> newActions) {
+    static void onSave(List<CommandSequence> newActions) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Saving disabled");
         alert.setHeaderText("Saving disabled");
         alert.setContentText("Saving disabled, please copy this manually:");
         TextArea textArea = new TextArea(newActions.stream()
-                .map(ActionSequence::toString)
+                .map(CommandSequence::toString)
                 .collect(Collectors.joining(System.lineSeparator())));
         textArea.setEditable(false);
 

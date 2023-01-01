@@ -5,7 +5,6 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import uppu.Presenter;
-import uppu.model.ActionSequence;
 import uppu.model.CommandSequence;
 import uppu.model.State;
 import uppu.parse.Row;
@@ -70,7 +69,6 @@ public class CalendarTest extends Application {
 
     @Override
     public void start(Stage stage) {
-        Permutation current = Permutation.identity();
         List<List<Permutation>> permutations = new ArrayList<>();
         for (int i = 0; i < 1; i++) {
             permutations.add(List.of(cycle(0, 1, 2)));
@@ -86,17 +84,13 @@ public class CalendarTest extends Application {
             permutations.add(List.of(cycle(1, 3, 2)));
             permutations.add(List.of(klein(3), cycle(1, 3, 2)));
         }
-        List<CommandSequence> result = new ArrayList<>();
-        for (List<Permutation> p : permutations) {
-            CommandSequence.Result r = CommandSequence.toSequence(new Row.ExplicitRow(p), current);
-            current = r.permutation().compose(current);
-            result.add(r.sequence().title(monthOf(current).title()));
-        }
+        List<CommandSequence> result = State.create().getCommands(permutations.stream().map(Row::explicitRow).toList()).stream()
+                .map(r -> r.sequence().title(monthOf(r.permutation()).title())).toList();
         PermutationView view = PermutationView.create(stage);
         view.init();
         stage.show();
-        Consumer<List<ActionSequence>> onSave = MyTest::onSave;
-        new Presenter(view, onSave, State.create().getActions(result)).run();
+        Consumer<List<CommandSequence>> onSave = MyTest::onSave;
+        Presenter.create(view, onSave, result).run();
     }
 
     static Permutation klein(int j) {

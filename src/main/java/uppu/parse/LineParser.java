@@ -11,7 +11,7 @@ import static io.jbock.util.Either.right;
 import static io.jbock.util.Eithers.firstFailure;
 import static java.lang.Character.isWhitespace;
 import static uppu.parse.Expression.ParenExpression.parenExpression;
-import static uppu.parse.Row.ExplicitRow.explicitRow;
+import static uppu.parse.Row.explicitRow;
 
 public class LineParser {
 

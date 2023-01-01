@@ -6,6 +6,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import uppu.model.ActionSequence;
+import uppu.model.CommandSequence;
 import uppu.model.State;
 import uppu.view.InputView;
 import uppu.view.PermutationView;
@@ -18,7 +19,7 @@ import static uppu.util.Delay.runDelayed;
 public class Presenter {
 
     private final PermutationView view;
-    private final Consumer<List<ActionSequence>> onSave;
+    private final Consumer<List<CommandSequence>> onSave;
     private boolean running = true;
     private int current = 0;
     private PauseTransition wait;
@@ -26,11 +27,18 @@ public class Presenter {
 
     public Presenter(
             PermutationView view,
-            Consumer<List<ActionSequence>> onSave,
+            Consumer<List<CommandSequence>> onSave,
             List<ActionSequence> actions) {
         this.view = view;
         this.onSave = onSave;
         this.actions = actions;
+    }
+
+    public static Presenter create(
+            PermutationView view,
+            Consumer<List<CommandSequence>> onSave,
+            List<CommandSequence> commands) {
+        return new Presenter(view, onSave, State.create().getActions(commands));
     }
 
     public void run() {
@@ -86,7 +94,7 @@ public class Presenter {
                             stop();
                             actions = State.create().getActions(newCommands);
                             view.setActions(actions);
-                            onSave.accept(actions);
+                            onSave.accept(newCommands);
                             actions.stream().findFirst().ifPresent(view::setSelectedAction);
                             if (!actions.isEmpty()) {
                                 current = 0;

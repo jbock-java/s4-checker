@@ -5,6 +5,7 @@ import uppu.engine.Mover;
 import uppu.engine.Path;
 import uppu.model.Command.MoveCommand;
 import uppu.model.Command.WaitCommand;
+import uppu.parse.Row;
 import uppu.util.Suppliers;
 
 import java.util.ArrayList;
@@ -21,6 +22,18 @@ public final class State {
     public static State create() {
         return INSTANCE.get();
     }
+
+    public List<CommandSequence.Result> getCommands(List<? extends Row> permutations) {
+        Permutation current = Permutation.identity();
+        List<CommandSequence.Result> result = new ArrayList<>();
+        for (Row p : permutations) {
+            CommandSequence.Result tmp = CommandSequence.toSequence(p, current);
+            current = tmp.permutation().compose(current);
+            result.add(new CommandSequence.Result(tmp.sequence(), current));
+        }
+        return result;
+    }
+
 
     public List<ActionSequence> getActions(List<CommandSequence> sequences) {
         List<Colour> state = Colour.getValues();

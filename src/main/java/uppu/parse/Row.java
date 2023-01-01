@@ -13,11 +13,12 @@ public sealed interface Row permits Row.HomeRow, Row.ExplicitRow {
 
     String toString(Permutation current);
 
+    static ExplicitRow explicitRow(List<Permutation> permutations) {
+        return new ExplicitRow(permutations);
+    }
+
     record ExplicitRow(List<Permutation> permutations) implements Row {
 
-        public static ExplicitRow explicitRow(List<Permutation> permutations) {
-            return new ExplicitRow(permutations);
-        }
 
         @Override
         public List<Permutation> permutations(Permutation current) {
