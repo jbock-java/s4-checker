@@ -71,7 +71,13 @@ public class PermutationView {
     };
     private Runnable onEditButtonClicked = () -> {
     };
-    private Runnable onBack = () -> {
+    private Runnable onLeft = () -> {
+    };
+    private Runnable onRight = () -> {
+    };
+    private Runnable onD = () -> {
+    };
+    private Runnable onC = () -> {
     };
 
     private PauseTransition wait;
@@ -114,24 +120,36 @@ public class PermutationView {
         pauseButton.setOnMouseClicked(e -> onPauseButtonClicked.run());
         editButton.setOnMouseClicked(e -> onEditButtonClicked.run());
         actions.setOnKeyPressed(e -> {
-            if (e.getCode() == KeyCode.ESCAPE) {
-                stage.close();
+            if (e.getCode() == KeyCode.LEFT) {
+                onLeft.run();
+                return;
+            }
+            if (e.getCode() == KeyCode.RIGHT) {
+                onRight.run();
+                return;
+            }
+            if (e.getCode() == KeyCode.D) {
+                onD.run();
+                return;
+            }
+            if (e.getCode() == KeyCode.C) {
+                onC.run();
                 return;
             }
             if (e.getCode() == KeyCode.SPACE) {
                 onPauseButtonClicked.run();
                 return;
             }
+            if (e.getCode() == KeyCode.ESCAPE) {
+                stage.close();
+                return;
+            }
             if (e.getCode() == KeyCode.E) {
                 onEditButtonClicked.run();
                 return;
             }
-            if (e.getCode() == KeyCode.LEFT) {
-                onBack.run();
-                return;
-            }
             if (e.getCode() == KeyCode.BACK_SPACE) {
-                onBack.run();
+                onLeft.run();
             }
         });
     }
@@ -285,8 +303,20 @@ public class PermutationView {
         this.onPauseButtonClicked = onClick;
     }
 
-    public void setOnBack(Runnable onBack) {
-        this.onBack = onBack;
+    public void setOnLeft(Runnable onBack) {
+        this.onLeft = onBack;
+    }
+
+    public void setOnRight(Runnable onForward) {
+        this.onRight = onForward;
+    }
+
+    public void setOnD(Runnable onD) {
+        this.onD = onD;
+    }
+
+    public void setOnC(Runnable onC) {
+        this.onC = onC;
     }
 
     public void setRunning(boolean running) {
@@ -316,12 +346,5 @@ public class PermutationView {
             timeline.stop();
         }
         tl.clear();
-    }
-
-    public void setHomesVisible(
-            boolean visible) {
-//        for (Colour color : Colour.getValues()) {
-//            color.homeSphere().sphere().setVisible(visible);
-//        }
     }
 }

@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 import static io.parmigiano.Permutation.cycle;
 import static java.util.Objects.requireNonNull;
 
-enum Month {
+public enum Month {
     JANUARY(cycle(0, 1, 2), "01 Январь"),
     FEBRUARY(cycle(0, 2, 1), "02 Февраль"),
     MARCH(cycle(0, 2).compose(1, 3), "03 Март"),
@@ -39,15 +39,15 @@ enum Month {
         return monthMap;
     });
 
-    static Month monthOf(Permutation p) {
+    public static Month monthOf(Permutation p) {
         return requireNonNull(MAP.get().get(p));
     }
 
-    Permutation permutation() {
+    public Permutation permutation() {
         return p;
     }
 
-    String title() {
+    public String title() {
         return title;
     }
 

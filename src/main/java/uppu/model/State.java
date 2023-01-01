@@ -50,7 +50,7 @@ public final class State {
         return actionSequences;
     }
 
-    private record ActionWithState(
+    public record ActionWithState(
             Action action,
             List<Colour> finalState) {
     }
@@ -67,7 +67,7 @@ public final class State {
         throw new IllegalArgumentException();
     }
 
-    private ActionWithState getMoveAction(
+    public ActionWithState getMoveAction(
             Permutation p,
             List<Colour> state) {
         List<Mover> movers = new ArrayList<>();

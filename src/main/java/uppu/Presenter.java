@@ -70,7 +70,7 @@ public class Presenter {
             running = !running;
             setRunning(running);
         });
-        view.setOnBack(() -> {
+        view.setOnLeft(() -> {
             view.stop();
             view.setSelectedAction(actions.get(current));
             if (!running) {
@@ -88,7 +88,7 @@ public class Presenter {
                 S4Checker.readLines(lines).ifLeftOrElse(
                         error -> {
                             Alert alert = new Alert(AlertType.ERROR, error, ButtonType.OK);
-                            alert.showAndWait();
+                            alert.show();
                         },
                         newCommands -> {
                             stop();
@@ -103,10 +103,6 @@ public class Presenter {
                         });
                 inputView.close();
             });
-        });
-        wait = runDelayed(0, () -> {
-            wait = null;
-            view.setHomesVisible(false);
         });
         wait = runDelayed(2000, () -> {
             wait = null;
@@ -135,6 +131,5 @@ public class Presenter {
             wait = null;
         }
         view.stop();
-        view.setHomesVisible(false);
     }
 }

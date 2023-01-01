@@ -100,6 +100,6 @@ public class CalendarTest extends Application {
         expContent.add(textArea, 0, 0);
 
         alert.getDialogPane().setExpandableContent(expContent);
-        alert.showAndWait();
+        alert.show();
     }
 }

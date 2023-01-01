@@ -29,7 +29,7 @@ public class S4Checker extends Application {
         readLines(lines).ifLeftOrElse(
                 error -> {
                     Alert alert = new Alert(Alert.AlertType.ERROR, error, ButtonType.OK);
-                    alert.showAndWait();
+                    alert.show();
                 },
                 sequences -> {
                     PermutationView view = PermutationView.create(stage);
@@ -59,7 +59,7 @@ public class S4Checker extends Application {
             Files.write(path, lines, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, e.toString(), ButtonType.OK);
-            alert.showAndWait();
+            alert.show();
         }
     }
 }
