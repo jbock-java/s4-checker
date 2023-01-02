@@ -46,8 +46,20 @@ public enum Month {
         return monthMap;
     });
 
+    static final Supplier<Map<List<Colour>, Month>> STATE_MAP = Suppliers.memoize(() -> {
+        Map<List<Colour>, Month> monthMap = new HashMap<>();
+        for (Month month : Month.values()) {
+            monthMap.put(month.state, month);
+        }
+        return monthMap;
+    });
+
     public static Month monthOf(Permutation p) {
         return requireNonNull(MAP.get().get(p));
+    }
+
+    public static Month monthOf(List<Colour> state) {
+        return requireNonNull(STATE_MAP.get().get(state));
     }
 
     public Permutation permutation() {
