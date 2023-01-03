@@ -47,7 +47,7 @@ public class CalendarTest extends Application {
             List<List<Permutation>> permutations) {
         List<CommandSequence.Result> commands = State.create().getCommands(permutations.stream().map(Row::explicitRow).toList());
         List<CommandSequence.Result> result = commands.stream()
-                .map(r -> r.title(monthOf(r.permutation()).title())).toList();
+                .map(r -> r.title(monthOf(r.state()).title())).toList();
         PermutationView view = PermutationView.create(stage);
         view.init();
         stage.show();
