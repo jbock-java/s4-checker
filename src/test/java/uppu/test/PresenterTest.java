@@ -24,7 +24,7 @@ public class PresenterTest extends Application {
         List<Permutation> permutations2 = new ArrayList<>(Permutation.symmetricGroup(4));
         Collections.shuffle(permutations1);
         Collections.shuffle(permutations2);
-        List<CommandSequence> result = new ArrayList<>(2 * permutations1.size() * permutations1.size());
+        List<CommandSequence.Result> result = new ArrayList<>(2 * permutations1.size() * permutations1.size());
         for (Permutation p : permutations1) {
             if (p.isIdentity()) {
                 continue;
@@ -37,11 +37,11 @@ public class PresenterTest extends Application {
                     continue;
                 }
                 CommandSequence.Result r = CommandSequence.toSequence(new Row.ExplicitRow(List.of(p, q)), current);
-                result.add(r.sequence());
+                result.add(r);
                 current = r.permutation().compose(current);
                 if (!current.isIdentity()) {
                     r = CommandSequence.toSequence(Row.HOME_ROW, current);
-                    result.add(r.sequence());
+                    result.add(r);
                     current = r.permutation().compose(current);
                 }
             }
@@ -49,7 +49,7 @@ public class PresenterTest extends Application {
         PermutationView view = PermutationView.create(stage);
         view.init();
         stage.show();
-        Consumer<List<CommandSequence>> onSave = CalendarTest::onSave;
+        Consumer<List<CommandSequence.Result>> onSave = CalendarTest::onSave;
         new Presenter(view, onSave, State.create().getActions(result)).run();
     }
 

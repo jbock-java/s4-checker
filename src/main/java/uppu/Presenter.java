@@ -19,7 +19,7 @@ import static uppu.util.Delay.runDelayed;
 public class Presenter {
 
     private final PermutationView view;
-    private final Consumer<List<CommandSequence>> onSave;
+    private final Consumer<List<CommandSequence.Result>> onSave;
     private boolean running = true;
     private int current = 0;
     private PauseTransition wait;
@@ -27,7 +27,7 @@ public class Presenter {
 
     public Presenter(
             PermutationView view,
-            Consumer<List<CommandSequence>> onSave,
+            Consumer<List<CommandSequence.Result>> onSave,
             List<ActionSequence> actions) {
         this.view = view;
         this.onSave = onSave;
@@ -36,8 +36,8 @@ public class Presenter {
 
     public static Presenter create(
             PermutationView view,
-            Consumer<List<CommandSequence>> onSave,
-            List<CommandSequence> commands) {
+            Consumer<List<CommandSequence.Result>> onSave,
+            List<CommandSequence.Result> commands) {
         return new Presenter(view, onSave, State.create().getActions(commands));
     }
 

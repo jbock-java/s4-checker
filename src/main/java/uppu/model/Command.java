@@ -4,8 +4,8 @@ import io.parmigiano.Permutation;
 
 public sealed interface Command permits Command.MoveCommand, Command.WaitCommand {
 
-    static Command command(Permutation left) {
-        return new MoveCommand(left);
+    static Command moveCommand(Permutation p) {
+        return new MoveCommand(p);
     }
 
     static Command wait(int cycles) {

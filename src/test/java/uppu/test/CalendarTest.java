@@ -45,12 +45,13 @@ public class CalendarTest extends Application {
     static void run(
             Stage stage,
             List<List<Permutation>> permutations) {
-        List<CommandSequence> result = State.create().getCommands(permutations.stream().map(Row::explicitRow).toList()).stream()
-                .map(r -> r.sequence().title(monthOf(r.permutation()).title())).toList();
+        List<CommandSequence.Result> commands = State.create().getCommands(permutations.stream().map(Row::explicitRow).toList());
+        List<CommandSequence.Result> result = commands.stream()
+                .map(r -> r.title(monthOf(r.permutation()).title())).toList();
         PermutationView view = PermutationView.create(stage);
         view.init();
         stage.show();
-        Consumer<List<CommandSequence>> onSave = CalendarTest::onSave;
+        Consumer<List<CommandSequence.Result>> onSave = CalendarTest::onSave;
         Presenter.create(view, onSave, result).run();
     }
 
@@ -80,12 +81,13 @@ public class CalendarTest extends Application {
         launch(new String[0]);
     }
 
-    static void onSave(List<CommandSequence> newActions) {
+    static void onSave(List<CommandSequence.Result> newActions) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Saving disabled");
         alert.setHeaderText("Saving disabled");
         alert.setContentText("Saving disabled, please copy this manually:");
         TextArea textArea = new TextArea(newActions.stream()
+                .map(CommandSequence.Result::sequence)
                 .map(CommandSequence::toString)
                 .collect(Collectors.joining(System.lineSeparator())));
         textArea.setEditable(false);

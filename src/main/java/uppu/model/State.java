@@ -25,27 +25,29 @@ public final class State {
 
     public List<CommandSequence.Result> getCommands(List<? extends Row> permutations) {
         Permutation current = Permutation.identity();
+        List<Colour> state = Colour.getValues();
         List<CommandSequence.Result> result = new ArrayList<>();
         for (Row p : permutations) {
             CommandSequence.Result tmp = CommandSequence.toSequence(p, current);
             current = tmp.permutation().compose(current);
-            result.add(new CommandSequence.Result(tmp.sequence(), current));
+            state = current.apply(state);
+            result.add(CommandSequence.result(tmp.sequence(), current, state));
         }
         return result;
     }
 
 
-    public List<ActionSequence> getActions(List<CommandSequence> sequences) {
+    public List<ActionSequence> getActions(List<CommandSequence.Result> sequences) {
         List<Colour> state = Colour.getValues();
         List<ActionSequence> actionSequences = new ArrayList<>();
-        for (CommandSequence sequence : sequences) {
-            List<Action> actions = new ArrayList<>(sequence.commands().size());
-            for (Command command : sequence.commands()) {
+        for (CommandSequence.Result result : sequences) {
+            List<Action> actions = new ArrayList<>(result.sequence().commands().size());
+            for (Command command : result.sequence().commands()) {
                 ActionWithState action = getAction(state, command);
                 actions.add(action.action);
                 state = action.finalState;
             }
-            actionSequences.add(new ActionSequence(actions, sequence.title()));
+            actionSequences.add(new ActionSequence(actions, result.title()));
         }
         return actionSequences;
     }

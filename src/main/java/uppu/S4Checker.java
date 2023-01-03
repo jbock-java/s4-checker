@@ -35,7 +35,7 @@ public class S4Checker extends Application {
                     PermutationView view = PermutationView.create(stage);
                     view.init();
                     stage.show();
-                    Consumer<List<CommandSequence>> onSave = newActions ->
+                    Consumer<List<CommandSequence.Result>> onSave = newActions ->
                             writeToFile(commandLine.input().toPath(), newActions);
                     Presenter.create(view, onSave, sequences).run();
                 });
@@ -45,17 +45,18 @@ public class S4Checker extends Application {
         launch(args);
     }
 
-    static Either<String, List<CommandSequence>> readLines(List<String> lines) {
+    static Either<String, List<CommandSequence.Result>> readLines(List<String> lines) {
         return lines.stream().map(LineParser::parse).collect(firstFailure())
                 .map(rows -> State.create().getCommands(rows).stream()
-                        .map(CommandSequence.Result::sequence)
                         .toList());
     }
 
 
-    private void writeToFile(Path path, List<CommandSequence> newActions) {
+    private void writeToFile(Path path, List<CommandSequence.Result> newActions) {
         try {
-            List<String> lines = newActions.stream().map(CommandSequence::toString).toList();
+            List<String> lines = newActions.stream()
+                    .map(CommandSequence.Result::sequence)
+                    .map(CommandSequence::toString).toList();
             Files.write(path, lines, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, e.toString(), ButtonType.OK);
