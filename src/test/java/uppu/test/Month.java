@@ -1,52 +1,63 @@
 package uppu.test;
 
 import io.parmigiano.Permutation;
+import io.parmigiano.Taking;
 import uppu.model.Colour;
-import uppu.util.Suppliers;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
-import static io.parmigiano.Permutation.cycle;
 import static java.util.Objects.requireNonNull;
 import static uppu.model.Colour.BLUE;
 import static uppu.model.Colour.GREEN;
 import static uppu.model.Colour.RED;
 import static uppu.model.Colour.SILVER;
+import static uppu.util.Suppliers.memoize;
 
 public enum Month {
-    JANUARY(cycle(0, 1, 2), "01 Январь", List.of(BLUE, RED, GREEN, SILVER)),
-    FEBRUARY(cycle(0, 2, 1), "02 Февраль", List.of(GREEN, BLUE, RED, SILVER)),
-    MARCH(cycle(0, 2).compose(1, 3), "03 Март", List.of(BLUE, SILVER, RED, GREEN)),
+    JANUARY("01 Январь", List.of(BLUE, RED, GREEN, SILVER)),
+    FEBRUARY("02 Февраль", List.of(GREEN, BLUE, RED, SILVER)),
+    MARCH("03 Март", List.of(BLUE, SILVER, RED, GREEN)),
 
-    APRIL(cycle(0, 3, 1), "04 Апрель", List.of(GREEN, SILVER, BLUE, RED)),
-    MAY(cycle(1, 2, 3), "05 Май", List.of(RED, SILVER, GREEN, BLUE)),
-    JUNE(cycle(0, 1).compose(2, 3), "06 Июнь", List.of(GREEN, RED, SILVER, BLUE)),
+    APRIL("04 Апрель", List.of(GREEN, SILVER, BLUE, RED)),
+    MAY("05 Май", List.of(RED, SILVER, GREEN, BLUE)),
+    JUNE("06 Июнь", List.of(GREEN, RED, SILVER, BLUE)),
 
-    JULY(cycle(1, 3, 2), "07 Июль", List.of(RED, BLUE, SILVER, GREEN)),
-    AUGUST(cycle(0, 3, 2), "08 Август", List.of(BLUE, GREEN, SILVER, RED)),
-    SEPTEMBER(cycle(0, 3).compose(1, 2), "09 Сентябрь", List.of(SILVER, BLUE, GREEN, RED)),
+    JULY("07 Июль", List.of(RED, BLUE, SILVER, GREEN)),
+    AUGUST("08 Август", List.of(BLUE, GREEN, SILVER, RED)),
+    SEPTEMBER("09 Сентябрь", List.of(SILVER, BLUE, GREEN, RED)),
 
-    OCTOBER(cycle(0, 2, 3), "10 Октябрь", List.of(SILVER, GREEN, RED, BLUE)),
-    NOVEMBER(cycle(0, 1, 3), "11 Ноябрь", List.of(SILVER, RED, BLUE, GREEN)),
-    DECEMBER(Permutation.identity(), "12 Декабрь", List.of(RED, GREEN, BLUE, SILVER)),
+    OCTOBER("10 Октябрь", List.of(SILVER, GREEN, RED, BLUE)),
+    NOVEMBER("11 Ноябрь", List.of(SILVER, RED, BLUE, GREEN)),
+    DECEMBER("12 Декабрь", Colour.getValues()),
     ;
 
-    private final Permutation p;
-    private final String title;
-    private final List<Colour> state;
+    private final Supplier<String> title = memoize(() -> {
+        int maxLabel = 0;
+        for (Month m : values()) {
+            maxLabel = Math.max(maxLabel, m.label.length());
+        }
+        String padding = " ".repeat(maxLabel + 1 - label().length());
+        return label() + padding + state().stream()
+                .map(c -> c.name().substring(0, 1))
+                .collect(Collectors.joining(" "));
+    });
 
-    static final Supplier<Map<Permutation, Month>> MAP = Suppliers.memoize(() -> {
+    private final List<Colour> state;
+    private final String label;
+
+    static final Supplier<Map<Permutation, Month>> MAP = memoize(() -> {
         Map<Permutation, Month> monthMap = new HashMap<>();
         for (Month month : Month.values()) {
-            monthMap.put(month.p, month);
+            monthMap.put(month.permutation(), month);
         }
         return monthMap;
     });
 
-    static final Supplier<Map<List<Colour>, Month>> STATE_MAP = Suppliers.memoize(() -> {
+    static final Supplier<Map<List<Colour>, Month>> STATE_MAP = memoize(() -> {
         Map<List<Colour>, Month> monthMap = new HashMap<>();
         for (Month month : Month.values()) {
             monthMap.put(month.state, month);
@@ -63,21 +74,28 @@ public enum Month {
     }
 
     public Permutation permutation() {
-        return p;
+        return Taking.from(Colour.getValues()).to(state);
     }
 
     public String title() {
-        return title;
+        return title.get();
     }
 
-    Month(Permutation p, String title, List<Colour> state) {
-        this.p = p;
+    private String label() {
+        return label;
+    }
+
+    public List<Colour> state() {
+        return state;
+    }
+
+    Month(String title, List<Colour> state) {
         this.state = state;
-        this.title = title + " " + p.toString();
+        this.label = title;
     }
 
     @Override
     public String toString() {
-        return title;
+        return title();
     }
 }
