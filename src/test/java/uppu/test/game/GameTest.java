@@ -5,6 +5,10 @@ import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import uppu.view.PermutationView;
 
+/**
+ * JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
+ * actuallyRun=1
+ */
 public class GameTest extends Application {
 
     @Override
