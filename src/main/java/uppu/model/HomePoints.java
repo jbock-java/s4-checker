@@ -10,9 +10,6 @@ import static uppu.util.Suppliers.memoize;
 
 public final class HomePoints {
 
-    public static final double EDGE_LENGTH = Math.sqrt(8d / 3d);
-    public static final double FACE_RADIUS = EDGE_LENGTH * (2d / 3d) * (Math.sqrt(3) / 2);
-
     private static final Supplier<List<Point3D>> HOME_POINTS = memoize(() ->
             getHomePoints().stream()
                     .map(p -> permute(p, Permutation.cycle(0, 1).compose(0, 2)))
