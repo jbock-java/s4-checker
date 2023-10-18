@@ -19,7 +19,7 @@ dependencies {
     implementation('io.github.jbock-java:parmigiano:1.02')
     implementation('io.github.jbock-java:jbock:5.14')
     annotationProcessor('io.github.jbock-java:jbock-compiler:5.14')
-    testImplementation('org.apache.commons:commons-math3:3.6.1')
+    testImplementation('com.guicedee.services:commons-math3:62')
     testImplementation('org.mockito:mockito-core:4.10.0')
     testImplementation('org.junit.jupiter:junit-jupiter:5.9.1')
 }

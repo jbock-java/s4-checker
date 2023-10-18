@@ -8,6 +8,7 @@ open module uppufx.test {
 
     requires org.mockito;
     requires org.junit.jupiter.api;
+    requires org.apache.commons.math3;
 
     exports uppu.test.model;
     exports uppu.test.engine;
